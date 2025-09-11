@@ -53,6 +53,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'django_summernote',
+
+    'whitenoise.runserver_nostatic',  # to disable Django's staticfiles handling in favor of WhiteNoise
 ]
 
 
