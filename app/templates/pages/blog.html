@@ -1,0 +1,370 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- Page header -->
+<section class="pt-20 md:pt-28 text-white">
+  <div class="relative overflow-hidden">
+    <div class="absolute inset-0" style="background-image:url('/static/assets/images/page-header.jpeg');background-size:cover;background-position:center"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
+    <div class="relative max-w-7xl mx-auto px-4 py-10">
+      <h1 class="text-3xl md:text-5xl font-bold mb-2 md:mb-4">Blog</h1>
+      <p class="text-lg text-gray-100 mb-6 leading-relaxed line-clamp-2">
+        Healthcare insights, industry news, and expert perspectives from Arivas Pharmaceuticals.
+      </p>
+      <nav class="mt-3 flex items-center gap-2 text-sm">
+        <a href="/" class="px-3 py-1 rounded-full bg-white/10 hover:bg-white/20 text-white">Home</a>
+        <span class="text-white/70">/</span>
+        <span class="px-3 py-1 rounded-full bg-white text-arivas-red font-semibold">Blog</span>
+      </nav>
+    </div>
+  </div>
+</section>
+
+<!-- Blog Content Section -->
+<section class="py-16 bg-gray-50">
+  <div class="max-w-7xl mx-auto px-4" x-data="blogPage()" x-init="init()">
+    
+    <!-- Search and Filter Bar -->
+    <div class="mb-12">
+      <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+        <!-- Search Bar -->
+        <div class="relative w-full lg:max-w-md">
+          <input 
+            type="text" 
+            placeholder="Search articles..." 
+            class="w-full pl-10 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-arivas-red focus:border-arivas-red" 
+            x-model="search" 
+            @input.debounce.250ms="filterPosts()"
+          >
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        </div>
+        
+        <!-- Category Filter -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 w-full lg:w-auto">
+          <button 
+            @click="selectedCategory=''; filterPosts()" 
+            :class="selectedCategory==='' ? 'bg-arivas-red text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+            class="px-4 py-2 whitespace-nowrap rounded-full border border-gray-300 font-medium transition-colors"
+          >
+            All Articles
+          </button>
+          <template x-for="category in categories" :key="category.id">
+            <button 
+              @click="selectedCategory=String(category.id); filterPosts()" 
+              :class="selectedCategory==String(category.id) ? 'bg-arivas-red text-white' : 'bg-white text-gray-700 hover:bg-gray-50'"
+              class="px-4 py-2 whitespace-nowrap rounded-full border border-gray-300 font-medium transition-colors"
+              x-text="category.name"
+            >
+            </button>
+          </template>
+          
+          <!-- Server-side categories fallback -->
+          {% if blog_categories %}
+            <template x-if="categories.length === 0">
+              <div class="flex items-center gap-2">
+                {% for category in blog_categories %}
+                <button class="px-4 py-2 whitespace-nowrap rounded-full border border-gray-300 font-medium bg-white text-gray-700 hover:bg-gray-50">
+                  {{ category.name }}
+                </button>
+                {% endfor %}
+              </div>
+            </template>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Featured Posts Section -->
+    <template x-if="featuredPosts.length > 0 && search === '' && selectedCategory === ''">
+      <div class="mb-16">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Featured Articles</h2>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <template x-for="post in featuredPosts.slice(0, 2)" :key="post.id">
+            <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
+              <div class="relative h-64 bg-gradient-to-br from-arivas-red/20 to-gray-100 overflow-hidden">
+                <template x-if="post.featured_image">
+                  <img :src="post.featured_image" :alt="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                </template>
+                <template x-if="!post.featured_image">
+                  <div class="w-full h-full bg-gradient-to-br from-arivas-red/20 to-gray-100 flex items-center justify-center">
+                    <i class="fas fa-newspaper text-4xl text-gray-400"></i>
+                  </div>
+                </template>
+                <div class="absolute top-4 left-4">
+                  <span class="bg-arivas-red text-white text-xs font-semibold px-3 py-1 rounded-full" x-text="post.category.name"></span>
+                </div>
+              </div>
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2" x-text="post.title"></h3>
+                <p class="text-gray-600 mb-4 line-clamp-3" x-text="post.excerpt"></p>
+                <div class="flex items-center justify-between text-sm text-gray-500">
+                  <span x-text="post.author"></span>
+                  <span x-text="new Date(post.published_date).toLocaleDateString()"></span>
+                </div>
+                <a :href="`/blog/${post.slug}/`" class="inline-block mt-4 text-arivas-red font-medium hover:text-red-700 transition-colors">
+                  Read More <i class="fas fa-arrow-right ml-1"></i>
+                </a>
+              </div>
+            </article>
+          </template>
+        </div>
+      </div>
+    </template>
+
+    <!-- Server-side Featured Posts Fallback -->
+    {% if blog_posts %}
+      <template x-if="posts.length === 0">
+        <div class="mb-16">
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8">Featured Articles</h2>
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {% for post in blog_posts %}
+              {% if post.is_featured and forloop.counter <= 2 %}
+              <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
+                <div class="relative h-64 bg-gradient-to-br from-arivas-red/20 to-gray-100 overflow-hidden">
+                  {% if post.featured_image %}
+                    <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                  {% else %}
+                    <div class="w-full h-full bg-gradient-to-br from-arivas-red/20 to-gray-100 flex items-center justify-center">
+                      <i class="fas fa-newspaper text-4xl text-gray-400"></i>
+                    </div>
+                  {% endif %}
+                  <div class="absolute top-4 left-4">
+                    <span class="bg-arivas-red text-white text-xs font-semibold px-3 py-1 rounded-full">{{ post.category.name }}</span>
+                  </div>
+                </div>
+                <div class="p-6">
+                  <h3 class="text-xl font-bold text-gray-900 mb-3 line-clamp-2">{{ post.title }}</h3>
+                  <p class="text-gray-600 mb-4 line-clamp-3">{{ post.excerpt }}</p>
+                  <div class="flex items-center justify-between text-sm text-gray-500">
+                    <span>{{ post.author }}</span>
+                    <span>{{ post.published_date|date:"M d, Y" }}</span>
+                  </div>
+                  <a href="/blog/{{ post.slug }}/" class="inline-block mt-4 text-arivas-red font-medium hover:text-red-700 transition-colors">
+                    Read More <i class="fas fa-arrow-right ml-1"></i>
+                  </a>
+                </div>
+              </article>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+      </template>
+    {% endif %}
+
+    <!-- All Posts Grid -->
+    <div class="mb-8">
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8" x-show="search === '' && selectedCategory === ''">Latest Articles</h2>
+      <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-8" x-show="search !== '' || selectedCategory !== ''">
+        <span x-show="search !== ''">Search Results</span>
+        <span x-show="search === '' && selectedCategory !== ''">
+          Category: <span x-text="categories.find(c => String(c.id) === selectedCategory)?.name || 'Unknown'"></span>
+        </span>
+      </h2>
+    </div>
+
+    <!-- Loading State -->
+    <template x-if="loading">
+      <div class="py-16 text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-arivas-red"></div>
+        <p class="mt-4 text-gray-600">Loading articles...</p>
+      </div>
+    </template>
+
+    <!-- No Results -->
+    <template x-if="!loading && filteredPosts.length === 0">
+      <div class="py-16 text-center text-gray-600">
+        <i class="fas fa-search text-4xl mb-4 text-gray-400"></i>
+        <h3 class="text-xl font-semibold mb-2">No articles found</h3>
+        <p>Try adjusting your search or filter criteria.</p>
+      </div>
+    </template>
+
+    <!-- Posts Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" x-show="!loading && filteredPosts.length > 0">
+      <template x-for="post in filteredPosts" :key="post.id">
+        <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
+          <div class="relative h-48 bg-gradient-to-br from-arivas-red/20 to-gray-100 overflow-hidden">
+            <template x-if="post.featured_image">
+              <img :src="post.featured_image" :alt="post.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+            </template>
+            <template x-if="!post.featured_image">
+              <div class="w-full h-full bg-gradient-to-br from-arivas-red/20 to-gray-100 flex items-center justify-center">
+                <i class="fas fa-newspaper text-3xl text-gray-400"></i>
+              </div>
+            </template>
+            <div class="absolute top-4 left-4">
+              <span class="bg-arivas-red text-white text-xs font-semibold px-3 py-1 rounded-full" x-text="post.category.name"></span>
+            </div>
+          </div>
+          <div class="p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-3 line-clamp-2" x-text="post.title"></h3>
+            <p class="text-gray-600 mb-4 line-clamp-2" x-text="post.excerpt"></p>
+            <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+              <span x-text="post.author"></span>
+              <span x-text="new Date(post.published_date).toLocaleDateString()"></span>
+            </div>
+            <a :href="`/blog/${post.slug}/`" class="inline-block text-arivas-red font-medium hover:text-red-700 transition-colors">
+              Read More <i class="fas fa-arrow-right ml-1"></i>
+            </a>
+          </div>
+        </article>
+      </template>
+    </div>
+
+    <!-- Server-side Posts Fallback -->
+    {% if blog_posts %}
+      <template x-if="posts.length === 0 && !loading">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {% for post in blog_posts %}
+          <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
+            <div class="relative h-48 bg-gradient-to-br from-arivas-red/20 to-gray-100 overflow-hidden">
+              {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" alt="{{ post.title }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              {% else %}
+                <div class="w-full h-full bg-gradient-to-br from-arivas-red/20 to-gray-100 flex items-center justify-center">
+                  <i class="fas fa-newspaper text-3xl text-gray-400"></i>
+                </div>
+              {% endif %}
+              <div class="absolute top-4 left-4">
+                <span class="bg-arivas-red text-white text-xs font-semibold px-3 py-1 rounded-full">{{ post.category.name }}</span>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-lg font-bold text-gray-900 mb-3 line-clamp-2">{{ post.title }}</h3>
+              <p class="text-gray-600 mb-4 line-clamp-2">{{ post.excerpt }}</p>
+              <div class="flex items-center justify-between text-sm text-gray-500 mb-4">
+                <span>{{ post.author }}</span>
+                <span>{{ post.published_date|date:"M d, Y" }}</span>
+              </div>
+              <a href="/blog/{{ post.slug }}/" class="inline-block text-arivas-red font-medium hover:text-red-700 transition-colors">
+                Read More <i class="fas fa-arrow-right ml-1"></i>
+              </a>
+            </div>
+          </article>
+          {% endfor %}
+        </div>
+      </template>
+    {% else %}
+      <!-- No posts message -->
+      <template x-if="posts.length === 0 && !loading">
+        <div class="py-16 text-center text-gray-600">
+          <i class="fas fa-newspaper text-4xl mb-4 text-gray-400"></i>
+          <h3 class="text-xl font-semibold mb-2">No blog posts yet</h3>
+          <p>Check back soon for healthcare insights and company updates.</p>
+        </div>
+      </template>
+    {% endif %}
+
+    <!-- Load More Button -->
+    <template x-if="!loading && filteredPosts.length > 0 && hasMore">
+      <div class="text-center mt-12">
+        <button 
+          @click="loadMore()" 
+          class="bg-arivas-red hover:bg-red-700 text-white font-semibold py-3 px-8 rounded-lg transition-colors"
+        >
+          Load More Articles
+        </button>
+      </div>
+    </template>
+  </div>
+</section>
+
+<script>
+function blogPage() {
+  return {
+    posts: [],
+    filteredPosts: [],
+    featuredPosts: [],
+    categories: [],
+    search: '',
+    selectedCategory: '',
+    loading: true,
+    hasMore: false,
+    page: 1,
+    
+    async init() {
+      this.loading = true;
+      try {
+        // Try to fetch from API first
+        const [catRes, postRes] = await Promise.all([
+          fetch('/api/blog-categories/'),
+          fetch('/api/blog-posts/')
+        ]);
+        
+        if (catRes.ok && postRes.ok) {
+          this.categories = await catRes.json();
+          const postsData = await postRes.json();
+          this.posts = postsData.results || postsData || [];
+          this.featuredPosts = this.posts.filter(p => p.is_featured);
+          this.filterPosts();
+        } else {
+          // API failed, use server-side data if available
+          console.log('API not available, using server-side data');
+        }
+      } catch (error) {
+        console.error('Error loading blog data:', error);
+        // Will fall back to server-side rendered content
+      } finally {
+        this.loading = false;
+      }
+    },
+    
+    filterPosts() {
+      const search = this.search.toLowerCase();
+      this.filteredPosts = this.posts.filter(post => {
+        const matchesSearch = !search || 
+          post.title.toLowerCase().includes(search) || 
+          post.excerpt.toLowerCase().includes(search) ||
+          post.author.toLowerCase().includes(search);
+        
+        const matchesCategory = !this.selectedCategory || 
+          String(post.category?.id) === String(this.selectedCategory);
+        
+        return matchesSearch && matchesCategory;
+      });
+    },
+    
+    getStaticPosts() {
+      // Fallback static posts for demo
+      return [
+        {
+          id: 1,
+          title: "Quality Manufacturing at Scale",
+          slug: "quality-manufacturing-at-scale",
+          excerpt: "How we ensure world-class standards across our pharmaceutical manufacturing facilities.",
+          author: "Dr. Sandip Kumar Sar",
+          published_date: "2024-01-15",
+          is_featured: true,
+          category: { id: 1, name: "Manufacturing" },
+          featured_image: null
+        },
+        {
+          id: 2,
+          title: "R&D Spotlight: New Formulations",
+          slug: "rd-spotlight-new-formulations",
+          excerpt: "A look at our ongoing research and development efforts to improve patient outcomes.",
+          author: "Research Team",
+          published_date: "2024-01-10",
+          is_featured: true,
+          category: { id: 2, name: "Research" },
+          featured_image: null
+        },
+        {
+          id: 3,
+          title: "Supply Chain Excellence",
+          slug: "supply-chain-excellence",
+          excerpt: "Delivering reliable pharmaceutical products with our global distribution network.",
+          author: "Operations Team",
+          published_date: "2024-01-05",
+          is_featured: false,
+          category: { id: 3, name: "Operations" },
+          featured_image: null
+        }
+      ];
+    }
+  }
+}
+</script>
+
+{% endblock %}
+
+

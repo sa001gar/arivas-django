@@ -1,0 +1,161 @@
+{% load static %}
+<header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-sm" id="header">
+    <div class="bg-arivas-red text-white py-2 px-4 hidden md:block">
+        <div class="max-w-7xl mx-auto flex justify-between items-center text-sm">
+            <div class="flex items-center space-x-6">
+                <div class="flex items-center space-x-2">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                    </svg>
+                    <span>+91 7001841379</span>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                    </svg>
+                    <span>arvispharma@gmail.com</span>
+                </div>
+            </div>
+            <div>
+                <span>Trusted Healthcare Partner Since 2010</span>
+            </div>
+        </div>
+    </div>
+    
+    <nav class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex justify-between items-center">
+            <a href="/" class="flex items-center space-x-3">
+                <img src="{% static 'assets/images/logo.avif' %}" alt="Arivas Pharma Logo" class="h-12 w-auto" />
+            </a>
+            
+            <!-- Desktop Navigation -->
+            <div class="hidden lg:flex items-center space-x-8">
+                <a href="/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Home</a>
+                <a href="/about/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">About</a>
+                
+                <!-- Products Dropdown -->
+                <div class="relative group" id="products-dropdown">
+                    <div class="flex items-center space-x-1 text-arivas-dark cursor-pointer hover:text-arivas-red transition-colors duration-300 font-medium">
+                        <span>Products</span>
+                        <svg class="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                    <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100">
+                        <div class="py-1" id="product-categories">
+                            {% for category in product_categories %}
+                                <a href="/products/category/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300">{{ category.name }}</a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="/contact/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Contact</a>
+                <a href="/blog/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Blog</a>
+                <a href="/price-list/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Price List</a>
+                <a href="#" class="bg-arivas-red hover:bg-arivas-red/90 text-white px-6 py-2 rounded">Order Now</a>
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <button 
+                onclick="toggleMobileMenu()" 
+                class="lg:hidden p-2 text-arivas-dark hover:text-arivas-red transition-colors"
+                id="mobile-menu-btn"
+            >
+                <svg class="h-6 w-6" id="menu-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                </svg>
+                <svg class="h-6 w-6 hidden" id="close-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Mobile Navigation -->
+        <div class="hidden lg:hidden mt-4 py-4 border-t border-gray-200" id="mobile-menu">
+            <div class="flex flex-col space-y-4">
+                <a href="/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Home</a>
+                <a href="/about/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">About</a>
+                
+                <!-- Mobile Products Dropdown -->
+                <div class="flex flex-col">
+                    <button 
+                        onclick="toggleMobileProductsDropdown()" 
+                        class="flex items-center justify-between text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2 w-full text-left"
+                    >
+                        <span>Products</span>
+                        <svg class="h-5 w-5" id="mobile-products-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+                    <div class="hidden flex-col pl-6 mt-2 space-y-2" id="mobile-product-categories">
+                        {% for category in product_categories %}
+                            <a href="/products/category/{{ category.id }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300" onclick="closeMobileMenu()">{{ category.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <a href="/contact/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Contact</a>
+                <a href="/blog/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Blog</a>
+                <a href="/download-price-list/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Price List</a>
+                <div class="px-4">
+                    <a href="#" class="bg-arivas-red hover:bg-arivas-red/90 text-white w-full block text-center py-2 rounded">Order Now</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle scroll effects
+    window.addEventListener('scroll', function() {
+        const header = document.getElementById('header');
+        if (window.scrollY > 0) {
+            header.classList.remove('bg-white/95', 'backdrop-blur-sm');
+            header.classList.add('bg-white', 'shadow-md');
+        } else {
+            header.classList.remove('bg-white', 'shadow-md');
+            header.classList.add('bg-white/95', 'backdrop-blur-sm');
+        }
+    });
+});
+
+function toggleMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+    
+    mobileMenu.classList.toggle('hidden');
+    menuIcon.classList.toggle('hidden');
+    closeIcon.classList.toggle('hidden');
+    
+    // Close products dropdown when menu is toggled
+    const mobileProductsDropdown = document.getElementById('mobile-product-categories');
+    const chevron = document.getElementById('mobile-products-chevron');
+    mobileProductsDropdown.classList.add('hidden');
+    chevron.style.transform = 'rotate(0deg)';
+}
+
+function closeMobileMenu() {
+    const mobileMenu = document.getElementById('mobile-menu');
+    const menuIcon = document.getElementById('menu-icon');
+    const closeIcon = document.getElementById('close-icon');
+    
+    mobileMenu.classList.add('hidden');
+    menuIcon.classList.remove('hidden');
+    closeIcon.classList.add('hidden');
+}
+
+function toggleMobileProductsDropdown() {
+    const dropdown = document.getElementById('mobile-product-categories');
+    const chevron = document.getElementById('mobile-products-chevron');
+    
+    dropdown.classList.toggle('hidden');
+    if (dropdown.classList.contains('hidden')) {
+        chevron.style.transform = 'rotate(0deg)';
+    } else {
+        chevron.style.transform = 'rotate(180deg)';
+    }
+}
+</script>
