@@ -11,7 +11,7 @@ from unfold.decorators import display, action
 from django_summernote.admin import SummernoteModelAdmin
 from .models import (
     ProductCategory, Product, ProductStatus, 
-    BlogPost, BlogCategory, PriceList, AboutPage, ContactFormSubmission, PageSEO, Enquiry
+    BlogPost, BlogCategory, PriceList, ContactFormSubmission, PageSEO, Enquiry
 )
 
 # Custom admin filters
@@ -239,33 +239,9 @@ class PriceListAdmin(ModelAdmin):
             )
         return format_html('<span class="text-gray-400">No file</span>')
 
-@admin.register(AboutPage)
-class AboutPageAdmin(ModelAdmin, SummernoteModelAdmin):
-    summernote_fields = ('content1', 'content2')
-    list_display = ['seo_meta_title', 'updated_at']
-    readonly_fields = ['created_at', 'updated_at']
-    search_fields = ['seo_meta_title', 'seo_meta_description', 'seo_meta_keywords']
-    
-    fieldsets = (
-        ('SEO Meta Information', {
-            'fields': ('seo_meta_title', 'seo_meta_description', 'seo_meta_keywords'),
-            'description': 'Manage SEO-related meta tags for the About page.',
-            'classes': ('collapse', 'unfold-fieldset')
-        }),
-        ('Content Sections', {
-            'fields': ('content1', 'content2'),
-            'description': 'Main content blocks for the About page.',
-            'classes': ('unfold-fieldset',)
-        }),
-        ('Timestamps', {
-            'fields': ('created_at', 'updated_at'),
-            'classes': ('collapse', 'unfold-fieldset')
-        }),
-    )
-
 @admin.register(PageSEO)
 class PageSEOAdmin(ModelAdmin, SummernoteModelAdmin):
-    # summernote_fields = ('content',)
+    summernote_fields = ('content1', 'content2', 'content3', 'content4', 'content5')
     list_display = ['title', 'slug', 'created_at', 'updated_at']
     prepopulated_fields = {'slug': ('title',)}
     search_fields = ['title', 'seo_meta_title', 'seo_meta_description', 'seo_meta_keywords']
@@ -276,13 +252,13 @@ class PageSEOAdmin(ModelAdmin, SummernoteModelAdmin):
             'fields': ('title', 'slug'),
             'classes': ('unfold-fieldset',)
         }),
-        # ('Content', {
-        #     'fields': ('content',),
-        #     'classes': ('unfold-fieldset',)
-        # }),
         ('SEO Settings', {
             'fields': ('seo_meta_title', 'seo_meta_description', 'seo_meta_keywords'),
             'classes': ('collapse', 'unfold-fieldset')
+        }),
+        ('Content Sections', {
+            'fields': ('content1', 'content2', 'content3', 'content4', 'content5'),
+            'classes': ('unfold-fieldset',)
         }),
         ('Timestamps', {
             'fields': ('created_at', 'updated_at'),
@@ -341,14 +317,14 @@ class ContactFormSubmissionAdmin(ModelAdmin):
             time_diff = timezone.now() - obj.submitted_date
             if time_diff > timedelta(hours=24):
                 return format_html(
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">🔥 Urgent</span>'
+                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Urgent</span>'
                 )
             elif time_diff > timedelta(hours=12):
                 return format_html(
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">⚠️ High</span>'
+                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">High</span>'
                 )
         return format_html(
-            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">📝 Normal</span>'
+            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Normal</span>'
         )
     
     @action(description="Mark as responded")
@@ -433,7 +409,7 @@ class EnquiryAdmin(ModelAdmin):
                 '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">✓ Responded</span>'
             )
         return format_html(
-            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">⏳ Pending</span>'
+            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>'
         )
     
     @display(description="Priority")
@@ -446,14 +422,14 @@ class EnquiryAdmin(ModelAdmin):
             time_diff = timezone.now() - obj.submitted_date
             if time_diff > timedelta(hours=24):
                 return format_html(
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">🔥 Urgent</span>'
+                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Urgent</span>'
                 )
             elif time_diff > timedelta(hours=12):
                 return format_html(
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">⚠️ High</span>'
+                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">High</span>'
                 )
         return format_html(
-            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">📝 Normal</span>'
+            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Normal</span>'
         )
     
     @action(description="Mark as responded")
@@ -542,9 +518,8 @@ class ArivasAdminSite(AdminSite):
         custom_order = {
             'Communications': ['Enquiry', 'ContactFormSubmission'],
             'Products': ['Product', 'ProductCategory', 'ProductStatus'],
-            'Content': ['BlogPost', 'BlogCategory', 'AboutPage', 'PageSEO'],
+            'Content': ['BlogPost', 'BlogCategory', 'PageSEO'],
             'Resources': ['PriceList'],
-            'Analytics': ['PageVisit', 'ProductView', 'BlogPostView'],
             'Administration': ['User', 'Group']
         }
         

@@ -4,8 +4,6 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
 from django_summernote.fields import SummernoteTextField
-from django.utils import timezone
-from django.db.models import Count, Sum
 
 # Create your models here.
 class ProductCategory(models.Model):
@@ -219,51 +217,6 @@ class PriceList(models.Model):
         verbose_name_plural = "Price Lists"
         ordering = ['-upload_date']
 
-class AboutPage(models.Model):
-    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
-    seo_meta_description = models.TextField(blank=True, null=True)
-    seo_meta_keywords = models.CharField(
-        max_length=255,
-        blank=True,
-        null=True,
-        help_text="Comma-separated SEO keywords"
-    )
-
-    content1 = models.TextField(help_text="Main content section 1")
-    content2 = models.TextField(help_text="Main content section 2")
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return "About Page"
-
-    def get_seo_keywords_list(self):
-        """
-        Returns the SEO keywords as a list, split by commas.
-        """
-        if self.seo_meta_keywords:
-            return [kw.strip() for kw in self.seo_meta_keywords.split(',') if kw.strip()]
-        return []
-
-    class Meta:
-        verbose_name = "About Page"
-        verbose_name_plural = "About Page"
-        ordering = ['-updated_at']
-
-class BlogPostView(models.Model):
-    blog_post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='views')
-    ip_address = models.GenericIPAddressField()
-    view_date = models.DateTimeField(auto_now_add=True)
-    session_id = models.CharField(max_length=100, blank=True)
-    
-    class Meta:
-        verbose_name = "Blog Post View"
-        verbose_name_plural = "Blog Post Views"
-        ordering = ['-view_date']
-    
-    def __str__(self):
-        return f"{self.blog_post.title} - {self.view_date.strftime('%Y-%m-%d %H:%M')}"
-
 class ContactFormSubmission(models.Model):
     """Contact form submissions from website visitors"""
     name = models.CharField(max_length=100)
@@ -304,6 +257,10 @@ class Enquiry(models.Model):
 
 class PageSEO(models.Model):
     """Custom pages with SEO optimization"""
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True)
+    
+    """SEO Fields"""
     seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
     seo_meta_description = models.TextField(blank=True, null=True)
     seo_meta_keywords = models.CharField(
@@ -313,9 +270,14 @@ class PageSEO(models.Model):
         help_text="Comma-separated SEO keywords"
     )
 
-    title = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, blank=True)
-    # content = SummernoteTextField(help_text="Main page content")
+    """Content Sections"""
+    content1 = models.TextField(help_text="Main content section 1")
+    content2 = models.TextField(help_text="Main content section 2", blank=True, null=True)
+    content3 = models.TextField(help_text="Main content section 3", blank=True, null=True)
+    content4 = models.TextField(help_text="Main content section 4", blank=True, null=True)
+    content5 = models.TextField(help_text="Main content section 5", blank=True, null=True)
+
+    """Timestamps"""
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

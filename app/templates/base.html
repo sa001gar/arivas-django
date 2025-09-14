@@ -4,35 +4,20 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Title -->
-    {% if seo_meta_title %}
     <title>{{ seo_meta_title }} | Arivas Pharma</title>
-    {% else %}
-    <title>Arivas Pharma - Quality Pharmaceutical Products</title>
-    {% endif %}
-    <!-- Meta Tags -->
-    {% if seo_meta_description %}
     <meta name="description" content="{{ seo_meta_description }}">
-    {% else %}
-    <meta name="description" content="Arivas Pharma - Leading pharmaceutical company providing quality medicines and healthcare solutions worldwide.">
-    {% endif %}
-    {% if seo_meta_keywords %}
     <meta name="keywords" content="{{ seo_meta_keywords }}">
-    {% else %}
-    <meta name="keywords" content="pharmaceutical, medicines, healthcare, medical supplies, drugs, pharma">
-    {% endif %}
-    
     <meta name="author" content="Arivas Pharma">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="{{ request.build_absolute_uri }}" />
-    
+
     <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{% if seo_meta_title %}{{ seo_meta_title }}{% elif seo_meta_name %}{{ seo_meta_name }}{% else %}Arivas Pharma{% endif %}">
-    <meta property="og:description" content="{% if seo_meta_description %}{{ seo_meta_description }}{% else %}Leading pharmaceutical company providing quality medicines and healthcare solutions worldwide.{% endif %}">
+    <meta property="og:title" content="{{ seo_meta_title }}">
+    <meta property="og:description" content="{{ seo_meta_description }}">
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:type" content="website">
-    <meta property="og:image" content="{% if seo_meta_image %}{{ seo_meta_image.url }}{% else %}{% static 'assets/images/logo.png' %}{% endif %}">
-    <meta property="og:image:alt" content="{% if seo_meta_title %}{{ seo_meta_title }}{% else %}Arivas Pharma{% endif %}">
+    <meta property="og:image" content="{% static 'assets/images/logo.png' %}">
+    <meta property="og:image:alt" content="{{ seo_meta_title|default:'Arivas Pharma' }}">
     
     <!-- Favicon -->
     <link rel="icon" href="{% static 'assets/images/favicon.ico' %}">
@@ -40,70 +25,214 @@
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.4/dist/aos.css">
+    <link rel="stylesheet" href="{% static 'assets/css/swiper-bundle.min.css' %}">
+    <link rel="stylesheet" href="{% static 'assets/css/aos.css' %}">
+    
+    <!-- Loader CSS -->
+    <style>
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+        
+        .page-loader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .loader-spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #D32F2F;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: #D32F2F;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
+        }
+        
+        .scroll-to-top:hover {
+            background: #B71C1C;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
+        }
+        
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .scroll-to-top i {
+            font-size: 18px;
+        }
+        
+        /* Active navigation state */
+        .active-nav {
+            color: #D32F2F !important;
+            font-weight: 600;
+        }
+        
+        .active-nav::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #D32F2F;
+        }
+        
+        nav a {
+            position: relative;
+        }
+    </style>
+
+    {% block extra_head %}
+
+    {% endblock %}
     
     <!-- JavaScript Libraries -->
     <script src="{% static 'assets/js/tailwind.js' %}"></script>
+     <!-- Tailwind Configuration -->
+    <script src="{% static 'assets/js/tailwind-config.js' %}"></script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
-    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="{% static 'assets/js/alpine-cdn.min.js' %}" defer></script>
 
-    <!-- Tailwind Configuration -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              'arivas-red': '#D32F2F',
-              'arivas-green': '#388E3C',
-              'arivas-white': '#FFFFFF',
-              'arivas-red-light': '#FFEBEE',
-              'arivas-green-light': '#E8F5E8',
-              'arivas-gray': '#F5F5F5',
-              'arivas-dark': '#212121',
-            },
-            animation: {
-              'slide-in': 'slide-in 0.5s ease-out',
-              'fade-in': 'fade-in 0.6s ease-out',
-            },
-            keyframes: {
-              'slide-in': {
-                '0%': { transform: 'translateX(-100%)' },
-                '100%': { transform: 'translateX(0)' },
-              },
-              'fade-in': {
-                '0%': { opacity: '0', transform: 'translateY(20px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-            },
-          }
-        }
-      }
-    </script>
 </head>
 
 <body class="bg-white text-arivas-dark">
+  
+  <!-- Page Loader -->
+  <div class="page-loader" id="pageLoader">
+    <div class="loader-spinner"></div>
+  </div>
+
   {% include 'includes/header.html' %}
-  
   <main>
-    {% block content %}{% endblock %}
+    {% block content %}
+    <!-- Content goes here -->
+     
+    {% endblock %}
   </main>
-  
   {% include 'includes/footer.html' %}
   
+  <!-- Scroll to Top Button -->
+  <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
+    <i class="fas fa-arrow-up"></i>
+  </button>
+  
   <!-- AOS Animation Script -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+  <script src="{% static 'assets/js/aos.js' %}"></script>
+  <script src="{% static 'assets/js/includes/header.js' %}"></script>
+  
+  <!-- Page Loader, Scroll to Top, and Navigation Scripts -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      if (window.AOS) {
-        AOS.init({ 
-          once: true, 
-          duration: 700, 
-          easing: 'ease-out-cubic' 
-        });
+    // Page Loader
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('pageLoader');
+      setTimeout(() => {
+        loader.classList.add('hidden');
+      }, 500);
+    });
+    
+    // Show loader on page navigation (for links)
+    document.addEventListener('click', function(e) {
+      const link = e.target.closest('a');
+      if (link && link.href && !link.href.includes('#') && !link.target === '_blank' && link.hostname === window.location.hostname) {
+        const loader = document.getElementById('pageLoader');
+        loader.classList.remove('hidden');
       }
     });
+    
+    // Scroll to Top functionality
+    const scrollToTopBtn = document.getElementById('scrollToTop');
+    
+    window.addEventListener('scroll', function() {
+      if (window.pageYOffset > 300) {
+        scrollToTopBtn.classList.add('visible');
+      } else {
+        scrollToTopBtn.classList.remove('visible');
+      }
+    });
+    
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
+    
+    // Auto scroll to top on route changes (for SPA-like behavior)
+    let currentUrl = window.location.href;
+    setInterval(function() {
+      if (window.location.href !== currentUrl) {
+        currentUrl = window.location.href;
+        window.scrollTo(0, 0);
+      }
+    }, 100);
+    
+    // Navigation active state
+    document.addEventListener('DOMContentLoaded', function() {
+      updateActiveNavigation();
+    });
+    
+    function updateActiveNavigation() {
+      const currentPath = window.location.pathname;
+      const navLinks = document.querySelectorAll('nav a, #mobile-menu a');
+      
+      navLinks.forEach(link => {
+        link.classList.remove('active-nav');
+        const linkPath = new URL(link.href, window.location.origin).pathname;
+        
+        if (currentPath === linkPath || (currentPath !== '/' && linkPath !== '/' && currentPath.startsWith(linkPath))) {
+          link.classList.add('active-nav');
+        }
+      });
+      
+      // Special handling for products dropdown
+      if (currentPath.includes('/products/')) {
+        const productsDropdown = document.querySelector('#products-dropdown > div');
+        if (productsDropdown) {
+          productsDropdown.classList.add('active-nav');
+        }
+      }
+    }
   </script>
+  
+  {% block extra_scripts %}
+  
+  {% endblock %}
+
 </body>
 </html>
 

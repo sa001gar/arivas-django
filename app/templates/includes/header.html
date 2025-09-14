@@ -35,14 +35,15 @@
                 
                 <!-- Products Dropdown -->
                 <div class="relative group" id="products-dropdown">
-                    <div class="flex items-center space-x-1 text-arivas-dark cursor-pointer hover:text-arivas-red transition-colors duration-300 font-medium">
+                    <a href="/products/" class="flex items-center space-x-1 text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">
                         <span>Products</span>
                         <svg class="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
-                    </div>
+                    </a>
                     <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100">
                         <div class="py-1" id="product-categories">
+                            <a href="/products/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300 font-semibold border-b border-gray-100">All Products</a>
                             {% for category in product_categories %}
                                 <a href="/products/category/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300">{{ category.name }}</a>
                             {% endfor %}
@@ -79,83 +80,37 @@
                 
                 <!-- Mobile Products Dropdown -->
                 <div class="flex flex-col">
-                    <button 
-                        onclick="toggleMobileProductsDropdown()" 
+                    <a href="/products/" 
                         class="flex items-center justify-between text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2 w-full text-left"
+                        onclick="closeMobileMenu()"
                     >
                         <span>Products</span>
-                        <svg class="h-5 w-5" id="mobile-products-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    </a>
+                    <button 
+                        onclick="toggleMobileProductsDropdown()" 
+                        class="flex items-center justify-between text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-1 w-full text-left text-sm"
+                    >
+                        <span>Browse Categories</span>
+                        <svg class="h-4 w-4" id="mobile-products-chevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
                     </button>
                     <div class="hidden flex-col pl-6 mt-2 space-y-2" id="mobile-product-categories">
                         {% for category in product_categories %}
-                            <a href="/products/category/{{ category.id }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300" onclick="closeMobileMenu()">{{ category.name }}</a>
+                            <a href="/products/category/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300" onclick="closeMobileMenu()">{{ category.name }}</a>
                         {% endfor %}
                     </div>
                 </div>
                 
                 <a href="/contact/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Contact</a>
                 <a href="/blog/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Blog</a>
-                <a href="/download-price-list/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Price List</a>
+                <a href="/price-list/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium px-4 py-2" onclick="closeMobileMenu()">Price List</a>
                 <div class="px-4">
-                    <a href="#" class="bg-arivas-red hover:bg-arivas-red/90 text-white w-full block text-center py-2 rounded">Order Now</a>
+                    <a href="/enquiry/" class="bg-arivas-red hover:bg-arivas-red/90 text-white w-full block text-center py-2 rounded" onclick="closeMobileMenu()">Enquiry</a>
                 </div>
             </div>
         </div>
     </nav>
 </header>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Handle scroll effects
-    window.addEventListener('scroll', function() {
-        const header = document.getElementById('header');
-        if (window.scrollY > 0) {
-            header.classList.remove('bg-white/95', 'backdrop-blur-sm');
-            header.classList.add('bg-white', 'shadow-md');
-        } else {
-            header.classList.remove('bg-white', 'shadow-md');
-            header.classList.add('bg-white/95', 'backdrop-blur-sm');
-        }
-    });
-});
 
-function toggleMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
-    const closeIcon = document.getElementById('close-icon');
-    
-    mobileMenu.classList.toggle('hidden');
-    menuIcon.classList.toggle('hidden');
-    closeIcon.classList.toggle('hidden');
-    
-    // Close products dropdown when menu is toggled
-    const mobileProductsDropdown = document.getElementById('mobile-product-categories');
-    const chevron = document.getElementById('mobile-products-chevron');
-    mobileProductsDropdown.classList.add('hidden');
-    chevron.style.transform = 'rotate(0deg)';
-}
-
-function closeMobileMenu() {
-    const mobileMenu = document.getElementById('mobile-menu');
-    const menuIcon = document.getElementById('menu-icon');
-    const closeIcon = document.getElementById('close-icon');
-    
-    mobileMenu.classList.add('hidden');
-    menuIcon.classList.remove('hidden');
-    closeIcon.classList.add('hidden');
-}
-
-function toggleMobileProductsDropdown() {
-    const dropdown = document.getElementById('mobile-product-categories');
-    const chevron = document.getElementById('mobile-products-chevron');
-    
-    dropdown.classList.toggle('hidden');
-    if (dropdown.classList.contains('hidden')) {
-        chevron.style.transform = 'rotate(0deg)';
-    } else {
-        chevron.style.transform = 'rotate(180deg)';
-    }
-}
-</script>

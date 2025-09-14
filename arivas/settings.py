@@ -94,9 +94,11 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.csrf',
             ],
         },
     },
@@ -189,9 +191,47 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 SUMMERNOTE_CONFIG = {
     "iframe": True,
+    "summernote": {
+        "airMode": False,
+        "width": "100%",
+        "height": "400",
+        "codemirror": {
+            "mode": "htmlmixed",
+            "lineNumbers": True,
+            "theme": "monokai"
+        },
+        "toolbar": [
+            ["style", ["style"]],
+            ["font", ["bold", "underline", "clear"]],
+            ["fontname", ["fontname"]],
+            ["color", ["color"]],
+            ["para", ["ul", "ol", "paragraph"]],
+            ["table", ["table"]],
+            ["insert", ["link", "picture", "video"]],
+            ["view", ["fullscreen", "codeview", "help"]],
+        ],
+    },
     "css": (
         "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css",
+        "/static/assets/css/pages/home.css",
+        "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     ),
+    "css_for_inplace": (
+        "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css",
+    ),
+    "js": ("/static/assets/js/tailwind.js","/static/assets/js/tailwind-config.js",
+           ),
+    "js_for_inplace": (),
+    "disable_attachment": False,
+    "attachment_require_authentication": True,
+    "attachment_storage_class": None,
+    "attachment_upload_to": "django-summernote/",
+    "attachment_absolute_uri": False,
+    "codemirror": {
+        "mode": "htmlmixed",
+        "lineNumbers": True,
+        "theme": ""
+    },
 }
 
 # Django Unfold Configuration
@@ -260,14 +300,30 @@ UNFOLD = {
         "show_search": True,
         "show_all_applications": True,
         "navigation": [
+            # {
+            #     "title": "Dashboard",
+            #     "separator": True,
+            #     "items": [
+            #         {
+            #             "title": "Analytics",
+            #             "icon": "dashboard",
+            #             "link": lambda request: "/admin/",
+            #         },
+            #     ],
+            # },
             {
-                "title": "Dashboard",
+                "title": "Communications",
                 "separator": True,
                 "items": [
                     {
-                        "title": "Analytics",
-                        "icon": "dashboard",
-                        "link": lambda request: "/admin/",
+                        "title": "Enquiries",
+                        "icon": "mail",
+                        "link": lambda request: "/admin/app/enquiry/",
+                    },
+                    {
+                        "title": "Contact Forms",
+                        "icon": "contact_mail",
+                        "link": lambda request: "/admin/app/contactformsubmission/",
                     },
                 ],
             },
@@ -312,14 +368,9 @@ UNFOLD = {
                         "link": lambda request: "/admin/app/blogcategory/",
                     },
                     {
-                        "title": "Feature Blocks",
-                        "icon": "widgets",
-                        "link": lambda request: "/admin/app/feature_blocks/",
-                    },
-                    {
-                        "title": "About Page",
-                        "icon": "info",
-                        "link": lambda request: "/admin/app/aboutpage/",
+                        "title": "SEO Pages",
+                        "icon": "description",
+                        "link": lambda request: "/admin/app/pageseo/",
                     },
                 ],
             },
@@ -345,8 +396,9 @@ UNFOLD = {
         {
             "models": [
                 "app.product",
-                "app.productcategory",
+                "app.productcategory", 
                 "app.productstatus",
+                "app.pricelist",
             ],
             "items": [
                 {
@@ -354,12 +406,16 @@ UNFOLD = {
                     "link": lambda request: "/admin/app/productcategory/",
                 },
                 {
-                    "title": "Products",
+                    "title": "Products", 
                     "link": lambda request: "/admin/app/product/",
                 },
                 {
                     "title": "Product Status",
                     "link": lambda request: "/admin/app/productstatus/",
+                },
+                {
+                    "title": "Price Lists",
+                    "link": lambda request: "/admin/app/pricelist/",
                 },
             ],
         },
@@ -367,6 +423,7 @@ UNFOLD = {
             "models": [
                 "app.blogpost",
                 "app.blogcategory",
+                "app.pageseo",
             ],
             "items": [
                 {
@@ -377,6 +434,26 @@ UNFOLD = {
                     "title": "Blog Categories",
                     "link": lambda request: "/admin/app/blogcategory/",
                 },
+                {
+                    "title": "SEO Pages",
+                    "link": lambda request: "/admin/app/pageseo/",
+                },
+            ],
+        },
+        {
+            "models": [
+                "app.enquiry",
+                "app.contactformsubmission",
+            ],
+            "items": [
+                {
+                    "title": "Enquiries",
+                    "link": lambda request: "/admin/app/enquiry/",
+                },
+                {
+                    "title": "Contact Forms",
+                    "link": lambda request: "/admin/app/contactformsubmission/",
+                },
             ],
         },
     ],
@@ -384,51 +461,7 @@ UNFOLD = {
 
 def environment_callback(request):
     """Callback to show environment in admin header"""
+    if not DEBUG:
+        return ["Production", "success"]
     return ["Development", "warning"]  # [label, color]
-
-def dashboard_callback(request, context):
-    """Callback for dashboard widgets"""
-    from app.views import get_analytics_data
-    
-    try:
-        analytics = get_analytics_data()
-        
-        # Return context dictionary with dashboard data
-        context.update({
-            'analytics': analytics,
-            'dashboard_widgets': [
-                {
-                    "title": "Total Products",
-                    "metric": analytics['total_products'],
-                    "footer": f"+{analytics['total_categories']} categories",
-                },
-                {
-                    "title": "Blog Posts", 
-                    "metric": analytics['total_blog_posts'],
-                    "footer": "Published articles",
-                },
-                {
-                    "title": "Page Views (7 days)",
-                    "metric": analytics['recent_visits_7_days'], 
-                    "footer": f"Total: {analytics['total_page_visits']}",
-                },
-                {
-                    "title": "Contact Forms",
-                    "metric": analytics['recent_contacts'],
-                    "footer": "New submissions (7 days)",
-                },
-            ]
-        })
-        return context
-    except Exception as e:
-        context.update({
-            'dashboard_widgets': [
-                {
-                    "title": "Analytics",
-                    "metric": "Loading...",
-                    "footer": "Initializing dashboard",
-                }
-            ]
-        })
-        return context
 
