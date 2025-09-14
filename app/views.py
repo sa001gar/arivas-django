@@ -1,28 +1,61 @@
 from django.shortcuts import render, get_object_or_404
-from .models import ProductCategory, Feature_Blocks, Product, ProductStatus, BlogPost, BlogCategory, PriceList, AboutPage, PageVisit, ProductView, BlogPostView, ContactFormSubmission
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
 from django.core import serializers
 from django.utils import timezone
 from django.db.models import Count, Q
 from datetime import datetime, timedelta
-from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import user_passes_test
+from .models import (
+    ProductCategory, Product, ProductStatus, BlogPost, BlogCategory, 
+    PriceList, AboutPage,
+    ContactFormSubmission, PageSEO, Enquiry
+)
 
 # Create your views here.
 
 def home(request):
     product_categories = ProductCategory.objects.all()
-    feature_blocks = Feature_Blocks.objects.all()
-    new_products = Product.objects.order_by('-created_at')[:12]
-    
+    page_content = PageSEO.objects.filter(slug='home').first()
+    if page_content:
+        seo_meta_title = page_content.seo_meta_title
+        seo_meta_description = page_content.seo_meta_description
+        seo_meta_keywords = ', '.join(page_content.get_seo_keywords_list())
+    else:
+        seo_meta_title = "Home"
+        seo_meta_description = ""
+        seo_meta_keywords = ""
+        
 
-    return render(request, 'pages/home.html', { 'product_categories': product_categories, 'feature_blocks': feature_blocks, 'new_products': new_products})
+    new_products = Product.objects.order_by('-created_at')[:12]
+
+    return render(request, 'pages/home.html', {
+        'product_categories': product_categories,
+        'new_products': new_products,
+        'seo_meta_title': seo_meta_title,
+        'seo_meta_description': seo_meta_description,
+        'seo_meta_keywords': seo_meta_keywords,
+        
+    })
 
 def about(request):
     product_categories = ProductCategory.objects.all()
-    about_page= AboutPage.objects.first()
-    return render(request, 'pages/about.html', {'about_page': about_page, 'product_categories': product_categories})
+    page_content = PageSEO.objects.filter(slug='about').first()
+    if page_content:
+        seo_meta_title = page_content.seo_meta_title
+        seo_meta_description = page_content.seo_meta_description
+        seo_meta_keywords = ', '.join(page_content.get_seo_keywords_list())
+    else:
+        seo_meta_title = "Home"
+        seo_meta_description = ""
+        seo_meta_keywords = ""
+    about_page = AboutPage.objects.first()
+    return render(request, 'pages/about.html', {
+        'about_page': about_page,
+        'product_categories': product_categories,
+        'seo_meta_title': seo_meta_title,
+        'seo_meta_description': seo_meta_description,
+        'seo_meta_keywords': seo_meta_keywords,
+    })
 
 def contact(request):
     product_categories = ProductCategory.objects.all()
@@ -156,158 +189,66 @@ def api_blog_categories(request):
     data = [{'id': c.id, 'name': c.name, 'slug': c.slug} for c in categories]
     return JsonResponse(data, safe=False)
 
-# Analytics and Dashboard Functions
-def get_analytics_data():
-    """Get analytics data for dashboard"""
-    today = timezone.now().date()
-    last_30_days = today - timedelta(days=30)
-    last_7_days = today - timedelta(days=7)
+
+def enquiry(request):
+    product_categories = ProductCategory.objects.all()
     
-    # Basic counts
-    total_products = Product.objects.count()
-    total_categories = ProductCategory.objects.count()
-    total_blog_posts = BlogPost.objects.filter(status='published').count()
-    total_page_visits = PageVisit.objects.count()
+    if request.method == 'POST':
+        try:
+            name = request.POST.get('name', '').strip()
+            email = request.POST.get('email', '').strip()
+            phone = request.POST.get('phone', '').strip()
+            subject = request.POST.get('subject', '').strip()
+            message = request.POST.get('message', '').strip()
+            sku = request.POST.get('sku', '').strip()
+            
+            # Basic validation
+            if not name or not email or not subject or not message:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Please fill in all required fields.'
+                })
+            
+            if '@' not in email:
+                return JsonResponse({
+                    'status': 'error', 
+                    'message': 'Please enter a valid email address.'
+                })
+            
+            ip_address = request.META.get('REMOTE_ADDR')
+            
+            # Save the enquiry
+            enquiry_obj = Enquiry.objects.create(
+                sku=sku,
+                name=name,
+                email=email,
+                phone=phone,
+                subject=subject,
+                message=message,
+                ip_address=ip_address
+            )
+            
+            return JsonResponse({
+                'status': 'success', 
+                'message': 'Your enquiry has been submitted successfully. We will get back to you within 24 hours.'
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'status': 'error', 
+                'message': 'An error occurred while submitting your enquiry. Please try again.'
+            })
     
-    # Recent activity
-    recent_visits_7_days = PageVisit.objects.filter(visit_date__gte=last_7_days).count()
-    recent_visits_30_days = PageVisit.objects.filter(visit_date__gte=last_30_days).count()
+    # Get SKU from URL parameter for prefilling
+    sku = request.GET.get('sku', '')
     
-    # Most viewed products
-    popular_products = Product.objects.annotate(
-        view_count=Count('views')
-    ).order_by('-view_count')[:5]
+    # Get latest products for sidebar
+    latest_products = Product.objects.select_related('category').order_by('-created_at')[:6]
     
-    # Most viewed blog posts
-    popular_blog_posts = BlogPost.objects.filter(status='published').annotate(
-        view_count=Count('views')
-    ).order_by('-view_count')[:5]
-    
-    # Recent contact submissions
-    recent_contacts = ContactFormSubmission.objects.filter(
-        submitted_date__gte=last_7_days
-    ).count()
-    
-    # Page views by day (last 7 days)
-    daily_visits = []
-    for i in range(7):
-        day = today - timedelta(days=i)
-        visits = PageVisit.objects.filter(visit_date__date=day).count()
-        daily_visits.append({
-            'date': day.strftime('%Y-%m-%d'),
-            'visits': visits
-        })
-    
-    daily_visits.reverse()  # Show oldest to newest
-    
-    # Category performance
-    category_stats = ProductCategory.objects.annotate(
-        product_count=Count('products'),
-        total_views=Count('products__views')
-    ).order_by('-total_views')[:5]
-    
-    return {
-        'total_products': total_products,
-        'total_categories': total_categories,
-        'total_blog_posts': total_blog_posts,
-        'total_page_visits': total_page_visits,
-        'recent_visits_7_days': recent_visits_7_days,
-        'recent_visits_30_days': recent_visits_30_days,
-        'popular_products': popular_products,
-        'popular_blog_posts': popular_blog_posts,
-        'recent_contacts': recent_contacts,
-        'daily_visits': daily_visits,
-        'category_stats': category_stats,
+    context = {
+        'product_categories': product_categories,
+        'prefilled_sku': sku,
+        'latest_products': latest_products
     }
-
-@staff_member_required
-def admin_dashboard_data(request):
-    """API endpoint for admin dashboard data"""
-    data = get_analytics_data()
     
-    # Convert querysets to serializable data
-    data['popular_products'] = [
-        {
-            'id': p.id,
-            'name': p.name,
-            'view_count': p.view_count,
-            'category': p.category.name if p.category else 'No Category'
-        }
-        for p in data['popular_products']
-    ]
-    
-    data['popular_blog_posts'] = [
-        {
-            'id': p.id,
-            'title': p.title,
-            'view_count': p.view_count,
-            'category': p.category.name if p.category else 'No Category'
-        }
-        for p in data['popular_blog_posts']
-    ]
-    
-    data['category_stats'] = [
-        {
-            'id': c.id,
-            'name': c.name,
-            'product_count': c.product_count,
-            'total_views': c.total_views
-        }
-        for c in data['category_stats']
-    ]
-    
-    return JsonResponse(data)
-
-def track_page_visit(request, page_title="", page_url=""):
-    """Track page visits for analytics"""
-    if not page_url:
-        page_url = request.path
-    
-    # Get client IP
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    
-    # Create page visit record
-    PageVisit.objects.create(
-        page_url=page_url,
-        page_title=page_title,
-        ip_address=ip,
-        user_agent=request.META.get('HTTP_USER_AGENT', ''),
-        referrer=request.META.get('HTTP_REFERER'),
-        session_id=request.session.session_key or ''
-    )
-
-def track_product_view(request, product):
-    """Track product views for analytics"""
-    # Get client IP
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    
-    # Create product view record
-    ProductView.objects.create(
-        product=product,
-        ip_address=ip,
-        session_id=request.session.session_key or ''
-    )
-
-def track_blog_view(request, blog_post):
-    """Track blog post views for analytics"""
-    # Get client IP
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0]
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    
-    # Create blog view record
-    BlogPostView.objects.create(
-        blog_post=blog_post,
-        ip_address=ip,
-        session_id=request.session.session_key or ''
-    )
+    return render(request, 'pages/enquiry.html', context)

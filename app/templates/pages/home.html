@@ -1,7 +1,9 @@
 {% extends 'base.html' %}
 {% load static %}
-{% load custom_filters%}
+{% load custom_filters %}
 {% block content %}
+
+
 
 <!-- Hero Section  -->
 <section class="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -226,9 +228,11 @@
                       <i class="fas fa-eye mr-2"></i> View Product
                     </button>
                   </a>
-                  <button class="w-full border border-arivas-red text-arivas-red hover:bg-arivas-red hover:text-white px-4 py-2 rounded flex items-center justify-center text-sm font-semibold bg-white">
-                    <i class="fas fa-envelope mr-2"></i> Send Enquiry
-                  </button>
+                  <a href="/enquiry/?sku={{ product.sku }}" class="w-full">
+                    <button class="w-full border border-arivas-red text-arivas-red hover:bg-arivas-red hover:text-white px-4 py-2 rounded flex items-center justify-center text-sm font-semibold bg-white">
+                      <i class="fas fa-envelope mr-2"></i> Send Enquiry
+                    </button>
+                  </a>
                 </div>
               </div>
             </div>

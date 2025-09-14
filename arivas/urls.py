@@ -37,9 +37,9 @@ urlpatterns = [
     path('blog/category/<slug:category_slug>/', views.blog_category, name='blog_category'),
     path('blog/<slug:slug>/', views.individual_blog, name='individual_blog'),
     path('price-list/', views.price_list, name='price_list'),
+    path('enquiry/', views.enquiry, name='enquiry'),
 
-    # Analytics and Admin APIs
-    path('admin/dashboard/analytics/', views.admin_dashboard_data, name='admin_dashboard_data'),
+    
 
     # Public APIs
     path('api/products/', views.api_products, name='api_products'),

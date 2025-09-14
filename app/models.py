@@ -6,37 +6,31 @@ from django.utils.text import slugify
 from django_summernote.fields import SummernoteTextField
 from django.utils import timezone
 from django.db.models import Count, Sum
-# from .fixsummernote import CleanSummernoteTextField as SummernoteTextField
 
 # Create your models here.
-
-class Feature_Blocks(models.Model):
-    title = models.CharField(max_length=200)
-    description = models.TextField()
-    icon = models.CharField(max_length=100)  # Assuming you store icon class names or paths
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.title
-
-    class Meta:
-        verbose_name = "Feature Block"
-        verbose_name_plural = "Feature Blocks"
-        ordering = ['title']
-
-
 class ProductCategory(models.Model):
+    """ Product Category model with name, description, slug, icon, and SEO fields """
     name = models.CharField(max_length=100)
     description = models.TextField()
     slug = models.SlugField(unique=True)
     icon = models.CharField(max_length=100, blank=True, null=True)  # Assuming you store icon class names or paths
-    seo_meta_name = models.CharField(max_length=100, blank=True, null=True)
+    
+    """SEO Fields"""
+    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
     seo_meta_description = models.TextField(blank=True, null=True)
     seo_meta_keywords = models.CharField(max_length=255, blank=True, null=True)
+
+    """Timestamps"""
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    def get_seo_keywords_list(self):
+        """
+        Returns the SEO keywords as a list, split by commas.
+        """
+        if self.seo_meta_keywords:
+            return [kw.strip() for kw in self.seo_meta_keywords.split(',') if kw.strip()]
+        return []
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -56,6 +50,7 @@ class Product(models.Model):
     Represents a product in the catalog with name, description, rich content, image, category, and status.
     Fields:
         name (CharField): The name of the product.
+        sku (CharField): Stock Keeping Unit, unique identifier for the product.
         slug (SlugField): URL-friendly unique identifier, auto-generated from name if blank.
         description (TextField): Short description of the product.
         content (SummernoteTextField): Rich text content for detailed product information.
@@ -66,12 +61,24 @@ class Product(models.Model):
         updated_at (DateTimeField): Timestamp when the product was last updated.
     """
     name = models.CharField(max_length=200)
+    sku = models.CharField(max_length=100,unique=False, help_text="Stock Keeping Unit - unique product identifier")
     slug = models.SlugField(unique=True, blank=True)  # Allow blank so it can be auto-filled
     description = models.TextField(help_text="Short description for Page Preview")
     content=SummernoteTextField()  # Rich text with Summernote
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='products')
     image = models.ImageField(upload_to='products/')
 
+    """SEO Fields"""
+    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
+    seo_meta_description = models.CharField(max_length=255, blank=True, null=True)
+    seo_meta_keywords = models.CharField(max_length=255, blank=True, null=True, help_text="Comma-separated SEO tags")
+
+    status = models.ForeignKey('ProductStatus', on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
+
+    """Timestamps"""
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
@@ -89,9 +96,13 @@ class Product(models.Model):
             self.image.save(self.image.name, ContentFile(buffer.read()), save=False)
         super().save(*args, **kwargs)
 
-    status = models.ForeignKey('ProductStatus', on_delete=models.SET_NULL, null=True, blank=True, related_name='products')
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+    def get_seo_tags_list(self):
+        """
+        Returns the SEO tags as a list, split by commas.
+        """
+        if self.seo_meta_keywords:
+            return [tag.strip() for tag in self.seo_meta_keywords.split(',') if tag.strip()]
+        return []
 
     def __str__(self):
         return self.name
@@ -148,8 +159,13 @@ class BlogPost(models.Model):
         ('published', 'Published'),
         ('archived', 'Archived'),
     ], default='draft')
-    tags = models.CharField(max_length=200, blank=True, help_text="Comma-separated tags")
-    meta_description = models.CharField(max_length=160, blank=True, help_text="SEO meta description")
+
+    """SEO Fields"""
+    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
+    seo_meta_keywords = models.CharField(max_length=200, blank=True, help_text="Comma-separated tags")
+    seo_meta_description = models.CharField(max_length=160, blank=True, help_text="SEO meta description")
+
+    """Timestamps"""
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -161,8 +177,8 @@ class BlogPost(models.Model):
     def __str__(self):
         return self.title
 
-    def get_tags_list(self):
-        return [tag.strip() for tag in self.tags.split(',') if tag.strip()]
+    def get_seo_meta_keywords_list(self):
+        return [tag.strip() for tag in self.seo_meta_keywords.split(',') if tag.strip()]
 
     class Meta:
         verbose_name = "Blog Post"
@@ -175,9 +191,20 @@ class PriceList(models.Model):
     version = models.CharField(max_length=50, help_text="Version number (e.g., v1.0, 2024-Q1)")
     description = models.TextField(blank=True, help_text="Brief description of this price list")
     is_active = models.BooleanField(default=True, help_text="Only one price list should be active")
+
+    """SEO Fields"""
+    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
+    seo_meta_description = models.CharField(max_length=255, blank=True, null=True)
+    seo_meta_keywords = models.CharField(max_length=255, blank=True, null=True, help_text="Comma-separated SEO tags")
+
+    """Timestamps"""
     upload_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now=True)
 
+    def get_seo_meta_keywords_list(self):
+        if self.seo_meta_keywords:
+            return [tag.strip() for tag in self.seo_meta_keywords.split(',') if tag.strip()]
+        return []
     def save(self, *args, **kwargs):
         if self.is_active:
             # Set all other price lists to inactive
@@ -193,7 +220,7 @@ class PriceList(models.Model):
         ordering = ['-upload_date']
 
 class AboutPage(models.Model):
-    seo_meta_name = models.CharField(max_length=100, blank=True, null=True)
+    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
     seo_meta_description = models.TextField(blank=True, null=True)
     seo_meta_keywords = models.CharField(
         max_length=255,
@@ -208,7 +235,7 @@ class AboutPage(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return "About Page Content"
+        return "About Page"
 
     def get_seo_keywords_list(self):
         """
@@ -222,38 +249,6 @@ class AboutPage(models.Model):
         verbose_name = "About Page"
         verbose_name_plural = "About Page"
         ordering = ['-updated_at']
-
-# Analytics Models
-class PageVisit(models.Model):
-    page_url = models.CharField(max_length=255)
-    page_title = models.CharField(max_length=255, blank=True)
-    ip_address = models.GenericIPAddressField()
-    user_agent = models.TextField(blank=True)
-    referrer = models.URLField(blank=True, null=True)
-    visit_date = models.DateTimeField(auto_now_add=True)
-    session_id = models.CharField(max_length=100, blank=True)
-    
-    class Meta:
-        verbose_name = "Page Visit"
-        verbose_name_plural = "Page Visits"
-        ordering = ['-visit_date']
-    
-    def __str__(self):
-        return f"{self.page_title} - {self.visit_date.strftime('%Y-%m-%d %H:%M')}"
-
-class ProductView(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='views')
-    ip_address = models.GenericIPAddressField()
-    view_date = models.DateTimeField(auto_now_add=True)
-    session_id = models.CharField(max_length=100, blank=True)
-    
-    class Meta:
-        verbose_name = "Product View"
-        verbose_name_plural = "Product Views"
-        ordering = ['-view_date']
-    
-    def __str__(self):
-        return f"{self.product.name} - {self.view_date.strftime('%Y-%m-%d %H:%M')}"
 
 class BlogPostView(models.Model):
     blog_post = models.ForeignKey(BlogPost, on_delete=models.CASCADE, related_name='views')
@@ -270,6 +265,7 @@ class BlogPostView(models.Model):
         return f"{self.blog_post.title} - {self.view_date.strftime('%Y-%m-%d %H:%M')}"
 
 class ContactFormSubmission(models.Model):
+    """Contact form submissions from website visitors"""
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20, blank=True)
@@ -277,27 +273,69 @@ class ContactFormSubmission(models.Model):
     message = models.TextField()
     ip_address = models.GenericIPAddressField()
     submitted_date = models.DateTimeField(auto_now_add=True)
-    is_responded = models.BooleanField(default=False)
-    
+    is_responded = models.BooleanField(default=False, help_text="Mark as True when contact has been responded to")
+    def __str__(self):
+        return f"{self.name} - {self.subject}"
     class Meta:
         verbose_name = "Contact Form Submission"
         verbose_name_plural = "Contact Form Submissions"
         ordering = ['-submitted_date']
-    
+
+
+class Enquiry(models.Model):
+    sku=models.CharField(max_length=100, blank=True, null=True)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    subject = models.CharField(max_length=200)
+    message = models.TextField()
+    ip_address = models.GenericIPAddressField()
+    submitted_date = models.DateTimeField(auto_now_add=True)
+    is_responded = models.BooleanField(default=False, help_text="Mark as True when enquiry has been responded to")
+
+    class Meta:
+        verbose_name = "Enquiry"
+        verbose_name_plural = "Enquiries"
+        ordering = ['-submitted_date']
+
     def __str__(self):
         return f"{self.name} - {self.subject}"
-    
-class Page(models.Model):
-    url = models.CharField(max_length=255, unique=True)
-    title = models.CharField(max_length=255)
-    content = models.TextField(help_text="Content of the page")
+
+
+class PageSEO(models.Model):
+    """Custom pages with SEO optimization"""
+    seo_meta_title = models.CharField(max_length=100, blank=True, null=True)
+    seo_meta_description = models.TextField(blank=True, null=True)
+    seo_meta_keywords = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        help_text="Comma-separated SEO keywords"
+    )
+
+    title = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True, blank=True)
+    # content = SummernoteTextField(help_text="Main page content")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.title
 
+    def get_seo_keywords_list(self):
+        """
+        Returns the SEO keywords as a list, split by commas.
+        """
+        if self.seo_meta_keywords:
+            return [kw.strip() for kw in self.seo_meta_keywords.split(',') if kw.strip()]
+        return []
+
     class Meta:
-        verbose_name = "Page"
-        verbose_name_plural = "Pages"
-        ordering = ['title']
+        verbose_name = "Page SEO"
+        verbose_name_plural = "Pages SEO"
+        ordering = ['-updated_at']

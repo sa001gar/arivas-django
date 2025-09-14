@@ -31,6 +31,14 @@
     </div>
     <div>
       <h2 class="text-2xl md:text-3xl font-bold text-arivas-dark mb-4">{{ product.name }}</h2>
+      {% if product.sku %}
+      <div class="mb-4">
+        <span class="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full">
+          <i class="fas fa-barcode"></i>
+          <span class="font-medium">SKU:</span> {{ product.sku }}
+        </span>
+      </div>
+      {% endif %}
       <p class="text-gray-700 leading-relaxed mb-6">{{ product.content | safe }}</p>
       <div class="flex flex-wrap gap-3 my-8">
         <span class="px-3 py-1 rounded-full bg-arivas-red/10 text-arivas-red text-sm">{{ product.category.name }}</span>
@@ -39,7 +47,10 @@
         {% endif %}
       </div>
       <div class="flex flex-col sm:flex-row gap-3">
-        <a href="/contact/" class="px-6 py-3 rounded-full bg-arivas-red text-white font-semibold hover:bg-arivas-red/90">Send Enquiry</a>
+        <a href="/enquiry/?sku={{ product.sku }}" class="px-6 py-3 rounded-full bg-arivas-red text-white font-semibold hover:bg-arivas-red/90 flex items-center justify-center gap-2">
+          <i class="fas fa-envelope"></i>
+          Send Enquiry
+        </a>
         <a href="/products/category/{{ product.category.slug }}/" class="px-6 py-3 rounded-full border border-arivas-red text-arivas-red hover:bg-arivas-red/10">Back to {{ product.category.name }}</a>
       </div>
     </div>
