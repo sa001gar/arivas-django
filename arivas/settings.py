@@ -461,7 +461,7 @@ UNFOLD = {
 
 def environment_callback(request):
     """Callback to show environment in admin header"""
-    if not DEBUG:
-        return ["Production", "success"]
-    return ["Development", "warning"]  # [label, color]
+    # if not DEBUG:
+    #     return ["Production", "success"]
+    return ["Production", "success"]  # [label, color]
 
