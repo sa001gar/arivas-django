@@ -66,6 +66,10 @@
       <div class="py-20 text-center text-gray-600">No products available in this category yet.</div>
     {% endif %}
   </div>
+
+  <div class="max-w-7xl mx-auto my-16 px-4 py-8 text-justify text-gray-600 border-t border-gray-200">
+    <p>{{ category.description|linebreaksbr }}</p>
+  </div>
 </section>
 
 {% endblock %}
