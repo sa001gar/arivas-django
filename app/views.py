@@ -32,7 +32,9 @@ def render_dynamic_content(content, context_dict=None):
 def home(request):
     product_categories = ProductCategory.objects.all()
     page_content = PageSEO.objects.filter(slug='home').first()
-    
+    best_selling=ProductStatus.objects.get(slug='best-selling')
+    best_selling_products = Product.objects.filter(status=best_selling).order_by('-created_at')[:12]
+
     if page_content:
         seo_meta_title = page_content.seo_meta_title or "Home"
         seo_meta_description = page_content.seo_meta_description or ""
@@ -52,6 +54,7 @@ def home(request):
     return render(request, 'pages/home.html', {
         'product_categories': product_categories,
         'new_products': new_products,
+        'best_selling_products': best_selling_products,
         'seo_meta_title': seo_meta_title,
         'seo_meta_description': seo_meta_description,
         'seo_meta_keywords': seo_meta_keywords,

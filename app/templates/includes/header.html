@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div>
-                <span>Trusted Healthcare Partner Since 2010</span>
+                <span>Trusted Healthcare Partner Since 2016</span>
             </div>
         </div>
     </div>
@@ -43,10 +43,11 @@
                     </a>
                     <div class="absolute left-0 mt-2 w-48 bg-white border border-gray-100 rounded-md shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100">
                         <div class="py-1" id="product-categories">
-                            <a href="/products/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300 font-semibold border-b border-gray-100">All Products</a>
+                            
                             {% for category in product_categories %}
                                 <a href="/products/category/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300">{{ category.name }}</a>
                             {% endfor %}
+                            <a href="/products/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300 font-semibold border-b border-gray-100">All Products</a>
                         </div>
                     </div>
                 </div>
