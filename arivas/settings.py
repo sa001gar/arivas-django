@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -61,7 +61,6 @@ INSTALLED_APPS = [
     "unfold.contrib.location_field",  # optional, if django-location-field package is used
     "unfold.contrib.constance",  # 
 
-
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -70,13 +69,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'django_summernote',
-
-    'whitenoise.runserver_nostatic',  # to disable Django's staticfiles handling in favor of WhiteNoise
+    'whitenoise.runserver_nostatic',  # Keep WhiteNoise for static file serving
 ]
 
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # WhiteNoise must be after SecurityMiddleware
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -175,7 +174,6 @@ STORAGES = {
     },
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
-        # "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
     },
 }
 
