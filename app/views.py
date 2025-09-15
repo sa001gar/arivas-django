@@ -390,11 +390,13 @@ def api_products(request):
         data.append({
             'id': p.id,
             'name': p.name,
+            'slug': p.slug,
             'description': p.description,
             'image': p.image.url if p.image else '',
             'category': {
                 'id': p.category.id,
                 'name': p.category.name,
+                'slug': p.category.slug,
             } if p.category else None,
         })
     return JsonResponse(data, safe=False)
@@ -402,7 +404,7 @@ def api_products(request):
 @require_GET
 def api_categories(request):
     categories = ProductCategory.objects.all()
-    data = [{'id': c.id, 'name': c.name} for c in categories]
+    data = [{'id': c.id, 'name': c.name, 'slug': c.slug} for c in categories]
     return JsonResponse(data, safe=False)
 
 @require_GET
