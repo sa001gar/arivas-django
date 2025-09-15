@@ -69,7 +69,7 @@ class ProductCategoryAdmin(ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
-    list_display = ['name', 'category', 'status_badge', 'image_preview', 'created_at']
+    list_display = ['name','sku', 'category', 'status_badge', 'image_preview', 'created_at']
     list_filter = [
         ('category', ChoicesDropdownFilter),
         ('status', ChoicesDropdownFilter),
