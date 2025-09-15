@@ -1,0 +1,155 @@
+{% load static %}
+
+{% block extra_head %}
+<!-- Custom CSS for 404 Page -->
+<link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="{% static '/assets/css/404.css' %}">
+
+
+<!-- JavaScript Libraries -->
+<script src="{% static 'assets/js/tailwind.js' %}"></script>
+<!-- Tailwind Configuration -->
+<script src="{% static 'assets/js/tailwind-config.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="error-bg flex items-center justify-center px-4 py-16 lg:py-24">
+    <div class="max-w-4xl mx-auto text-center">
+        <!-- Error Code Section -->
+        <div class="relative mb-8">
+            <!-- Pulse Ring Animation -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-32 h-32 bg-arivas-red/20 rounded-full pulse-ring"></div>
+            </div>
+            
+            <!-- Main 404 Text -->
+            <div class="relative error-animation">
+                <h1 class="text-8xl md:text-9xl font-bold text-arivas-red mb-4">404</h1>
+                <div class="w-24 h-1 bg-arivas-red mx-auto rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="mb-8 space-y-4" data-aos="fade-up" data-aos-delay="200">
+            <h2 class="text-2xl md:text-3xl font-bold text-arivas-dark mb-4">
+                <i class="fas fa-search text-arivas-red mr-3"></i>
+                Page Not Found
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                Oops! The page you're looking for seems to have wandered off. 
+                Don't worry, even the best medicines sometimes get misplaced in the pharmacy.
+            </p>
+            <p class="text-gray-500">
+                The page might have been moved, deleted, or you might have mistyped the URL.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4 mb-12" data-aos="fade-up" data-aos-delay="400">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/" 
+                   class="inline-flex items-center px-8 py-3 bg-arivas-red hover:bg-arivas-red/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-home mr-2"></i>
+                    Back to Home
+                </a>
+                <a href="/products/" 
+                   class="inline-flex items-center px-8 py-3 border-2 border-arivas-red text-arivas-red hover:bg-arivas-red hover:text-white font-semibold rounded-lg transition-all duration-300">
+                    <i class="fas fa-pills mr-2"></i>
+                    Browse Products
+                </a>
+            </div>
+            
+            <div class="text-sm text-gray-500">
+                Or try searching for what you need:
+            </div>
+            
+            <!-- Search Box -->
+            <div class="max-w-md mx-auto relative">
+                <input type="text" 
+                       placeholder="Search products, categories..." 
+                       class="w-full pl-4 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-arivas-red/40 focus:border-arivas-red transition-colors"
+                       id="errorPageSearch">
+                <button onclick="performSearch()" 
+                        class="absolute right-2 top-1/2 -translate-y-1/2 bg-arivas-red hover:bg-arivas-red/90 text-white px-4 py-2 rounded-md transition-colors">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Quick Links -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="600">
+            <a href="/about/" 
+               class="group p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-arivas-red/20">
+                <div class="w-12 h-12 bg-arivas-red/10 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:bg-arivas-red/20 transition-colors">
+                    <i class="fas fa-info-circle text-arivas-red text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-arivas-dark mb-2">About Us</h3>
+                <p class="text-sm text-gray-600">Learn about Arivas Pharma</p>
+            </a>
+
+            <a href="/contact/" 
+               class="group p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-arivas-red/20">
+                <div class="w-12 h-12 bg-arivas-green/10 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:bg-arivas-green/20 transition-colors">
+                    <i class="fas fa-phone text-arivas-green text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-arivas-dark mb-2">Contact Us</h3>
+                <p class="text-sm text-gray-600">Get in touch with our team</p>
+            </a>
+
+            <a href="/enquiry/" 
+               class="group p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-arivas-red/20">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-envelope text-blue-600 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-arivas-dark mb-2">Send Enquiry</h3>
+                <p class="text-sm text-gray-600">Product information & support</p>
+            </a>
+        </div>
+
+        <!-- Help Text -->
+        <div class="mt-12 p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100" data-aos="fade-up" data-aos-delay="800">
+            <div class="flex items-center justify-center mb-3">
+                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-lightbulb text-blue-600"></i>
+                </div>
+                <h4 class="text-lg font-semibold text-blue-900">Need Help?</h4>
+            </div>
+            <p class="text-blue-800 text-sm max-w-2xl mx-auto">
+                If you believe this is an error or need immediate assistance, please contact our support team at 
+                <a href="tel:+917001841379" class="font-semibold hover:underline">+91 7001841379</a> 
+                or email us at 
+                <a href="mailto:arivaspharma@gmail.com" class="font-semibold hover:underline">arivaspharma@gmail.com</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Error page search functionality
+function performSearch() {
+    const searchTerm = document.getElementById('errorPageSearch').value.trim();
+    if (searchTerm) {
+        // Redirect to products page with search
+        window.location.href = `/products/?search=${encodeURIComponent(searchTerm)}`;
+    }
+}
+
+// Handle enter key in search box
+document.getElementById('errorPageSearch').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+// Initialize AOS animations
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof AOS !== 'undefined') {
+        AOS.refresh();
+    }
+});
+</script>
+
+{% endblock %}

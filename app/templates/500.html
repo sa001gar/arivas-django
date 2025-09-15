@@ -1,0 +1,227 @@
+{% load static %}
+
+{% block extra_head %}
+<!-- Custom CSS for 500 Page -->
+<link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="{% static '/assets/css/404.css' %}">
+
+<!-- JavaScript Libraries -->
+<script src="{% static 'assets/js/tailwind.js' %}"></script>
+<!-- Tailwind Configuration -->
+<script src="{% static 'assets/js/tailwind-config.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="error-bg flex items-center justify-center px-4 py-16 lg:py-24">
+    <div class="max-w-4xl mx-auto text-center">
+        <!-- Error Code Section -->
+        <div class="relative mb-8">
+            <!-- Pulse Ring Animation -->
+            <div class="absolute inset-0 flex items-center justify-center">
+                <div class="w-32 h-32 bg-red-600/20 rounded-full pulse-ring"></div>
+            </div>
+            
+            <!-- Main 500 Text -->
+            <div class="relative error-animation">
+                <h1 class="text-8xl md:text-9xl font-bold text-red-600 mb-4">500</h1>
+                <div class="w-24 h-1 bg-red-600 mx-auto rounded-full"></div>
+            </div>
+        </div>
+
+        <!-- Error Message -->
+        <div class="mb-8 space-y-4" data-aos="fade-up" data-aos-delay="200">
+            <h2 class="text-2xl md:text-3xl font-bold text-arivas-dark mb-4">
+                <i class="fas fa-exclamation-triangle text-red-600 mr-3"></i>
+                Server Error
+            </h2>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                We're experiencing some technical difficulties on our end. 
+                Our pharmacy technicians are working hard to fix this issue.
+            </p>
+            <p class="text-gray-500">
+                This is a temporary problem and should be resolved shortly. Please try again in a few moments.
+            </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4 mb-12" data-aos="fade-up" data-aos-delay="400">
+            <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <a href="/" 
+                   class="inline-flex items-center px-8 py-3 bg-arivas-red hover:bg-arivas-red/90 text-white font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <i class="fas fa-home mr-2"></i>
+                    Back to Home
+                </a>
+                <button onclick="window.location.reload()" 
+                        class="inline-flex items-center px-8 py-3 border-2 border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-semibold rounded-lg transition-all duration-300">
+                    <i class="fas fa-redo mr-2"></i>
+                    Try Again
+                </button>
+            </div>
+            
+            <div class="text-sm text-gray-500">
+                If the problem persists, please contact our support team:
+            </div>
+        </div>
+
+        <!-- Quick Contact Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto mb-8" data-aos="fade-up" data-aos-delay="600">
+            <a href="tel:+917001841379" 
+               class="group p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-arivas-green/20">
+                <div class="w-12 h-12 bg-arivas-green/10 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:bg-arivas-green/20 transition-colors">
+                    <i class="fas fa-phone text-arivas-green text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-arivas-dark mb-2">Call Support</h3>
+                <p class="text-sm text-gray-600 mb-2">Immediate assistance</p>
+                <p class="text-arivas-green font-semibold">+91 7001841379</p>
+            </a>
+
+            <a href="mailto:arivaspharma@gmail.com" 
+               class="group p-6 bg-white rounded-xl shadow-md hover:shadow-lg transition-all duration-300 border border-gray-100 hover:border-blue-200">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4 mx-auto group-hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-envelope text-blue-600 text-xl"></i>
+                </div>
+                <h3 class="font-semibold text-arivas-dark mb-2">Email Support</h3>
+                <p class="text-sm text-gray-600 mb-2">Report technical issues</p>
+                <p class="text-blue-600 font-semibold">arivaspharma@gmail.com</p>
+            </a>
+        </div>
+
+        <!-- Status Information -->
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl border border-amber-200 p-6" data-aos="fade-up" data-aos-delay="800">
+            <div class="flex items-center justify-center mb-3">
+                <div class="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center mr-3">
+                    <i class="fas fa-tools text-amber-600"></i>
+                </div>
+                <h4 class="text-lg font-semibold text-amber-900">What's Happening?</h4>
+            </div>
+            <div class="space-y-2 text-amber-800 text-sm max-w-2xl mx-auto">
+                <p>• Our servers are experiencing temporary technical difficulties</p>
+                <p>• This issue has been automatically reported to our technical team</p>
+                <p>• We're working to resolve this as quickly as possible</p>
+                <p>• Your data and information remain secure</p>
+            </div>
+            <div class="mt-4 pt-4 border-t border-amber-200">
+                <p class="text-xs text-amber-700">
+                    <i class="fas fa-clock mr-1"></i>
+                    Error reported at: <span id="errorTime"></span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Alternative Actions -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-3xl mx-auto" data-aos="fade-up" data-aos-delay="1000">
+            <a href="/about/" 
+               class="group p-4 bg-white rounded-lg shadow hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-arivas-red/20">
+                <div class="w-8 h-8 bg-arivas-red/10 rounded-lg flex items-center justify-center mb-2 mx-auto group-hover:bg-arivas-red/20 transition-colors">
+                    <i class="fas fa-info-circle text-arivas-red text-sm"></i>
+                </div>
+                <h4 class="font-medium text-arivas-dark text-sm mb-1">About Us</h4>
+                <p class="text-xs text-gray-600">Learn more about Arivas</p>
+            </a>
+
+            <a href="/contact/" 
+               class="group p-4 bg-white rounded-lg shadow hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-arivas-green/20">
+                <div class="w-8 h-8 bg-arivas-green/10 rounded-lg flex items-center justify-center mb-2 mx-auto group-hover:bg-arivas-green/20 transition-colors">
+                    <i class="fas fa-comment text-arivas-green text-sm"></i>
+                </div>
+                <h4 class="font-medium text-arivas-dark text-sm mb-1">Contact</h4>
+                <p class="text-xs text-gray-600">Get in touch</p>
+            </a>
+
+            <a href="/blog/" 
+               class="group p-4 bg-white rounded-lg shadow hover:shadow-md transition-all duration-300 border border-gray-100 hover:border-blue-200">
+                <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mb-2 mx-auto group-hover:bg-blue-200 transition-colors">
+                    <i class="fas fa-newspaper text-blue-600 text-sm"></i>
+                </div>
+                <h4 class="font-medium text-arivas-dark text-sm mb-1">Blog</h4>
+                <p class="text-xs text-gray-600">Read our articles</p>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+// Display current time for error reporting
+document.addEventListener('DOMContentLoaded', function() {
+    const now = new Date();
+    const timeString = now.toLocaleString('en-IN', {
+        timeZone: 'Asia/Kolkata',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+    });
+    
+    const errorTimeElement = document.getElementById('errorTime');
+    if (errorTimeElement) {
+        errorTimeElement.textContent = timeString;
+    }
+    
+    // Initialize AOS animations if available
+    if (typeof AOS !== 'undefined') {
+        AOS.refresh();
+    }
+});
+
+// Auto-retry functionality (optional)
+let retryCount = 0;
+const maxRetries = 3;
+
+function autoRetry() {
+    if (retryCount < maxRetries) {
+        retryCount++;
+        setTimeout(() => {
+            console.log(`Auto-retry attempt ${retryCount}`);
+            // Could implement automatic page refresh here if desired
+        }, 5000 * retryCount); // Increasing delay: 5s, 10s, 15s
+    }
+}
+
+// Uncomment the line below to enable auto-retry
+// autoRetry();
+</script>
+
+<!-- Include required CSS inline since we might not have access to external files during server error -->
+<style>
+.error-animation {
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.pulse-ring {
+    animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+@keyframes pulse-ring {
+    0% {
+        transform: scale(0.33);
+        opacity: 1;
+    }
+    80%, 100% {
+        transform: scale(2.5);
+        opacity: 0;
+    }
+}
+
+.error-bg {
+    background: linear-gradient(135deg, #fef7f7 0%, #fef2f2 100%);
+    min-height: calc(100vh - 200px);
+}
+
+/* Tailwind-like utilities for reliability */
+.text-arivas-red { color: #D32F2F; }
+.bg-arivas-red { background-color: #D32F2F; }
+.text-arivas-green { color: #388E3C; }
+.bg-arivas-green { background-color: #388E3C; }
+.text-arivas-dark { color: #2D3748; }
+.border-arivas-red { border-color: #D32F2F; }
+.hover\:bg-arivas-red\/90:hover { background-color: rgba(211, 47, 47, 0.9); }
+</style>
+{% endblock %}
