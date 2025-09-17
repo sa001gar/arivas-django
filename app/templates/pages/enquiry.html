@@ -227,7 +227,7 @@
               <!-- Product Image -->
               <div class="w-16 h-16 flex-shrink-0 rounded-lg overflow-hidden">
                 {% if product.image %}
-                  <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover">
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover" loading="lazy">
                 {% else %}
                   <div class="w-full h-full bg-gray-200 flex items-center justify-center">
                     <i class="fas fa-image text-gray-400"></i>

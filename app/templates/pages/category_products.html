@@ -43,7 +43,7 @@
             <span class="absolute top-4 left-4 bg-arivas-red text-white text-xs font-semibold px-3 py-1 rounded-full z-10 shadow">{{ product.category.name }}</span>
             <!-- Image -->
             <div class="aspect-square w-full overflow-hidden flex items-center justify-center bg-gray-50">
-              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <img src="{{ product.image.url }}" alt="{{ product.name }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
             </div>
             <!-- Content -->
             <div class="flex-1 flex flex-col p-5">

@@ -46,7 +46,7 @@
           <div class="group relative overflow-hidden rounded-2xl bg-white shadow-premium shadow-xl transition-all">
             <a :href="`/products/${product.category.slug}/${product.slug}/`" class="block">
               <div class="aspect-square w-full overflow-hidden relative">
-                <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                 <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between opacity-0 group-hover:opacity-100 transition-opacity">
                   <button class="px-4 py-2 rounded-full bg-white text-arivas-red text-sm font-semibold shadow">View product</button>
