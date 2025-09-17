@@ -29,11 +29,11 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 DEBUG = True
 
 
-# ALLOWED_HOSTS = ['arivaspharma.co.in', 'www.arivaspharma.co.in', '127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['arivaspharma.co.in', 'www.arivaspharma.co.in', '127.0.0.1', 'localhost']
 
-# CSRF_COOKIE_SECURE = True
-# CSRF_TRUSTED_ORIGINS = ['https://arivaspharma.co.in', 'https://www.arivaspharma.co.in']
-# SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://arivaspharma.co.in', 'https://www.arivaspharma.co.in']
+SESSION_COOKIE_SECURE = True
 
 
 LOGGING = {
@@ -223,25 +223,28 @@ SUMMERNOTE_CONFIG = {
         },
         "toolbar": [
             ["style", ["style"]],
-            ["font", ["bold", "underline", "clear"]],
+            ["font", ["bold", "italic", "underline", "strikethrough", "clear"]],
             ["fontname", ["fontname"]],
-            ["color", ["color"]],
+            ["fontsize", ["fontsize"]],
+            ["color", ["forecolor", "backcolor"]],
             ["para", ["ul", "ol", "paragraph"]],
+            ["height", ["height"]],
             ["table", ["table"]],
-            ["insert", ["link", "picture", "video"]],
+            ["insert", ["link", "picture", "video", "hr"]],
             ["view", ["fullscreen", "codeview", "help"]],
+            ["misc", ["undo", "redo"]],
         ],
     },
     "css": (
-        "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css",
+        "/static/css/dist/styles.css",
         "/static/assets/css/pages/home.css",
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     ),
     "css_for_inplace": (
-        "https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css",
+        "/static/css/dist/styles.css",
     ),
-    "js": ("/static/assets/js/tailwind.js","/static/assets/js/tailwind-config.js",
-           ),
+    # "js": ("/static/css/","/static/assets/js/tailwind-config.js",
+    #        ),
     "js_for_inplace": (),
     "disable_attachment": False,
     "attachment_require_authentication": True,
