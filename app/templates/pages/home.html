@@ -4,7 +4,10 @@
 
 {% block extra_head %}
 <!-- Custom CSS for enhanced styling -->
-<link rel="stylesheet" href="{% static 'assets/css/pages/home.css' %}">
+<link rel="stylesheet" href="{% static 'assets/css/pages/home.css' %}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{% static 'assets/css/pages/home.css' %}"></noscript>
+<link rel="stylesheet" href="{% static 'assets/css/swiper-bundle.min.css' %}" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{% static 'assets/css/swiper-bundle.min.css' %}"></noscript>
 {% endblock %}
 
 {% block content %}

@@ -28,14 +28,13 @@
     
     <!-- Preload critical assets -->
     <link rel="preload" href="{% static 'assets/css/base.css' %}" as="style">
-    <link rel="preload" href="{% static 'assets/js/alpine-cdn.min.js' %}" as="script">
+
     
     <!-- Stylesheets -->
     <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    <link rel="stylesheet" href="{% static 'assets/css/swiper-bundle.min.css' %}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{% static 'assets/css/swiper-bundle.min.css' %}"></noscript>
+    
     <link rel="stylesheet" href="{% static 'assets/css/aos.css' %}" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="{% static 'assets/css/aos.css' %}"></noscript>
     
@@ -148,7 +147,7 @@
     
     <!-- Load scripts with optimized attributes -->
     {% comment %} <script src="https://unpkg.com/htmx.org@1.9.12" defer></script> {% endcomment %}
-    <script src="{% static 'assets/js/alpine-cdn.min.js' %}" defer></script>
+    
 
 </head>
 
