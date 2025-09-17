@@ -30,6 +30,10 @@ DEBUG = False
 
 ALLOWED_HOSTS = ['arivaspharma.co.in', 'www.arivaspharma.co.in', '127.0.0.1', 'localhost']
 
+CSRF_COOKIE_SECURE = True
+CSRF_TRUSTED_ORIGINS = ['https://arivaspharma.co.in', 'https://www.arivaspharma.co.in']
+SESSION_COOKIE_SECURE = True
+
 
 LOGGING = {
     'version': 1,
@@ -72,7 +76,7 @@ INSTALLED_APPS = [
     'django_summernote',
     'tailwind',
     'theme',  # Your Tailwind CSS app
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # Keep WhiteNoise for static file serving
+    'whitenoise.runserver_nostatic',  # Keep WhiteNoise for static file serving
 ]
 
 
