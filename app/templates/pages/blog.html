@@ -1,5 +1,12 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block extra_head %}
+  <link rel="preload" href="{% static 'assets/js/alpine-cdn.min.js' %}" as="script">
+{% endblock %}
+
 {% block content %}
+
+
 <!-- Page header -->
 <section class="pt-20 md:pt-28 text-white">
   <div class="relative overflow-hidden">
@@ -368,4 +375,8 @@ function blogPage() {
 
 {% endblock %}
 
+
+{% block extra_scripts %}
+<script src="{% static 'assets/js/alpine-cdn.min.js' %}" defer></script>
+{% endblock %}
 
