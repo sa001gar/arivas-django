@@ -69,9 +69,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'app',
     'django_summernote',
-    'whitenoise.runserver_nostatic',  # Keep WhiteNoise for static file serving
     'tailwind',
     'theme',  # Your Tailwind CSS app
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Keep WhiteNoise for static file serving
 ]
 
 
@@ -171,9 +171,6 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# WhiteNoise configuration for serving media files in production
-WHITENOISE_USE_FINDERS = True
-WHITENOISE_AUTOREFRESH = True
 
 # # Additional security settings
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -186,17 +183,19 @@ SECURE_HSTS_PRELOAD = True
 SECURE_REFERRER_POLICY = "strict-origin"
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
+
+
+
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
 }
-       
 
-
+STATICFILES_STORAGE = "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
