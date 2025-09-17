@@ -3,7 +3,8 @@
 {% block content %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{% static 'assets/css/pages/enquiry.css' %}">
+<link rel="preload" href="{% static 'assets/css/pages/enquiry.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="{% static 'assets/css/pages/enquiry.css' %}"></noscript>
 {% endblock %}
 
 {{ content1|safe }}
@@ -308,6 +309,6 @@
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="{% static 'assets/js/pages/enquiry.js' %}"></script>
+<script src="{% static 'assets/js/pages/enquiry.js' %}" defer></script>
 {% endblock %}
 
