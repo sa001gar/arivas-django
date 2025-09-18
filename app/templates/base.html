@@ -13,7 +13,7 @@
   <link rel="canonical" href="{{ request.build_absolute_uri }}" />
 
   <!-- DNS Prefetch for external resources -->
-  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+  <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   
   <!-- Preconnect to critical domains -->
   <link rel="preconnect" href="https://cdnjs.cloudflare.com">
@@ -40,6 +40,10 @@
   <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
   <link rel="preload" href="{% static 'assets/css/aos.css' %}" as="style">
   <link rel="preload" href="{% static 'assets/js/aos.js' %}" as="script">
+
+  <!-- Preload critical CSS -->
+  <link rel="preload" href="{% static 'assets/css/base.css' %}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="{% static 'assets/css/base.css' %}"></noscript>
 
   {% block extra_head %}{% endblock %}
 </head>
@@ -75,16 +79,16 @@
   (function() {
     // Page Loader
     function hideLoader() {
-    const loader = document.getElementById('pageLoader');
-    if (loader) {
-      setTimeout(() => loader.classList.add('hidden'), 500);
-    }
+      const loader = document.getElementById('pageLoader');
+      if (loader) {
+        setTimeout(() => loader.classList.add('hidden'), 500);
+      }
     }
     
     if (document.readyState === 'complete') {
-    hideLoader();
+      hideLoader();
     } else {
-    window.addEventListener('load', hideLoader);
+      window.addEventListener('load', hideLoader);
     }
     
     // Scroll to Top functionality
@@ -92,66 +96,37 @@
     let ticking = false;
     
     function updateScrollButton() {
-    if (!scrollBtn) scrollBtn = document.getElementById('scrollToTop');
-    if (scrollBtn) {
-      if (window.pageYOffset > 300) {
-      scrollBtn.classList.add('visible');
-      } else {
-      scrollBtn.classList.remove('visible');
+      if (!scrollBtn) scrollBtn = document.getElementById('scrollToTop');
+      if (scrollBtn) {
+        if (window.pageYOffset > 300) {
+          scrollBtn.classList.add('visible');
+        } else {
+          scrollBtn.classList.remove('visible');
+        }
       }
-    }
-    ticking = false;
+      ticking = false;
     }
     
     function onScroll() {
-    if (!ticking) {
-      requestAnimationFrame(updateScrollButton);
-      ticking = true;
-    }
+      if (!ticking) {
+        requestAnimationFrame(updateScrollButton);
+        ticking = true;
+      }
     }
     
     window.addEventListener('scroll', onScroll, { passive: true });
     
     window.scrollToTop = function() {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
-    
-    // Navigation active state
-    function updateActiveNavigation() {
-    const currentPath = window.location.pathname;
-    const navLinks = document.querySelectorAll('nav a, #mobile-menu a');
-    
-    navLinks.forEach(link => {
-      link.classList.remove('active-nav');
-      const linkPath = new URL(link.href, window.location.origin).pathname;
-      
-      if (currentPath === linkPath || (currentPath !== '/' && linkPath !== '/' && currentPath.startsWith(linkPath))) {
-      link.classList.add('active-nav');
-      }
-    });
-    
-    // Special handling for products dropdown
-    if (currentPath.includes('/products/')) {
-      const productsDropdown = document.querySelector('#products-dropdown > div');
-      if (productsDropdown) {
-      productsDropdown.classList.add('active-nav');
-      }
-    }
-    }
-    
-    if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', updateActiveNavigation);
-    } else {
-    updateActiveNavigation();
-    }
     
     // Show loader on navigation
     document.addEventListener('click', function(e) {
-    const link = e.target.closest('a');
-    if (link && link.href && !link.href.includes('#') && link.target !== '_blank' && link.hostname === window.location.hostname) {
-      const loader = document.getElementById('pageLoader');
-      if (loader) loader.classList.remove('hidden');
-    }
+      const link = e.target.closest('a');
+      if (link && link.href && !link.href.includes('#') && link.target !== '_blank' && link.hostname === window.location.hostname) {
+        const loader = document.getElementById('pageLoader');
+        if (loader) loader.classList.remove('hidden');
+      }
     }, { passive: true });
   })();
   </script>
