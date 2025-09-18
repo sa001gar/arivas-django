@@ -3,270 +3,182 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ seo_meta_title }} | Arivas Pharma</title>
-    <meta name="description" content="{{ seo_meta_description }}">
-    <meta name="keywords" content="{{ seo_meta_keywords }}">
-    <meta name="author" content="Arivas Pharma">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="{{ request.build_absolute_uri }}" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ seo_meta_title }} | Arivas Pharma</title>
+  <meta name="description" content="{{ seo_meta_description }}">
+  <meta name="keywords" content="{{ seo_meta_keywords }}">
+  <meta name="author" content="Arivas Pharma">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="{{ request.build_absolute_uri }}" />
 
-    {% tailwind_css %}
+  <!-- DNS Prefetch for external resources -->
+  <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
+  
+  <!-- Preconnect to critical domains -->
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="{{ seo_meta_title }}">
-    <meta property="og:description" content="{{ seo_meta_description }}">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="{% static 'assets/images/logo.png' %}">
-    <meta property="og:image:alt" content="{{ seo_meta_title|default:'Arivas Pharmaceuticals' }}">
-    
-    <!-- Favicon -->
-    <link rel="icon" href="{% static 'assets/images/favicon.ico' %}">
-    
-    <!-- Preload critical assets -->
-    <link rel="preload" href="{% static 'assets/css/base.css' %}" as="style">
+  {% tailwind_css %}
 
-    
-    <!-- Stylesheets -->
-    {% comment %} <link rel="stylesheet" href="{% static 'assets/css/base.css' %}"> {% endcomment %}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
-    
-    <link rel="stylesheet" href="{% static 'assets/css/aos.css' %}" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="{% static 'assets/css/aos.css' %}"></noscript>
-    
-    <!-- Loader CSS -->
-    <style>
-        .page-loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease, visibility 0.5s ease;
-        }
-        
-        .page-loader.hidden {
-            opacity: 0;
-            visibility: hidden;
-        }
-        
-        .loader-spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #D32F2F;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        .scroll-to-top {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: #D32F2F;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
-        }
-        
-        .scroll-to-top:hover {
-            background: #B71C1C;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(211, 47, 47, 0.4);
-        }
-        
-        .scroll-to-top.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-        
-        .scroll-to-top i {
-            font-size: 18px;
-        }
-        
-        /* Active navigation state */
-        .active-nav {
-            color: #D32F2F !important;
-            font-weight: 600;
-        }
-        
-        .active-nav::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: #D32F2F;
-        }
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="{{ seo_meta_title }}">
+  <meta property="og:description" content="{{ seo_meta_description }}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:type" content="website">
+  <meta property="og:image" content="{% static 'assets/images/logo.png' %}">
+  <meta property="og:image:alt" content="{{ seo_meta_title|default:'Arivas Pharmaceuticals' }}">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="{% static 'assets/images/favicon.ico' %}">
+  
+  <!-- Critical CSS inline -->
+  <style>
+    .page-loader{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,.95);display:flex;justify-content:center;align-items:center;z-index:9999;transition:opacity .5s ease,visibility .5s ease}.page-loader.hidden{opacity:0;visibility:hidden}.loader-spinner{width:60px;height:60px;border:4px solid #f3f3f3;border-top:4px solid #D32F2F;border-radius:50%;animation:spin 1s linear infinite}@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}.scroll-to-top{position:fixed;bottom:30px;right:30px;width:50px;height:50px;background:#D32F2F;color:white;border:none;border-radius:50%;cursor:pointer;opacity:0;visibility:hidden;transition:all .3s ease;z-index:1000;box-shadow:0 4px 12px rgba(211,47,47,.3)}.scroll-to-top:hover{background:#B71C1C;transform:translateY(-2px);box-shadow:0 6px 16px rgba(211,47,47,.4)}.scroll-to-top.visible{opacity:1;visibility:visible}.scroll-to-top i{font-size:18px}.active-nav{color:#D32F2F!important;font-weight:600}.active-nav::after{content:'';position:absolute;bottom:-5px;left:0;right:0;height:2px;background:#D32F2F}@media (max-width:768px){.active-nav::after{display:none}}nav a{position:relative}
+  </style>
 
-        @media (max-width: 768px) {
-            .active-nav::after {
-                display: none;
-            }
-        }
-        nav a {
-            position: relative;
-        }
-    </style>
+  <!-- Preload critical fonts and assets -->
+  <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" as="style">
+  <link rel="preload" href="{% static 'assets/css/aos.css' %}" as="style">
+  <link rel="preload" href="{% static 'assets/js/aos.js' %}" as="script">
 
-    {% block extra_head %}
-
-    {% endblock %}
-
-
-    
-    <!-- JavaScript Libraries -->
-    {% comment %} <script src="{% static 'assets/js/tailwind.js' %}"></script> {% endcomment %}
-     <!-- Tailwind Configuration -->
-    {% comment %} <script src="{% static 'assets/js/tailwind-config.js' %}"></script> {% endcomment %}
-    <!-- Preload HTMX and Alpine.js -->
-    {% comment %} <link rel="preload" href="https://unpkg.com/htmx.org@1.9.12" as="script"> {% endcomment %}
-    
-    <!-- Load scripts with optimized attributes -->
-    {% comment %} <script src="https://unpkg.com/htmx.org@1.9.12" defer></script> {% endcomment %}
-    
-
+  {% block extra_head %}{% endblock %}
 </head>
 
 <body class="bg-white text-arivas-dark">
   
   <!-- Page Loader -->
   <div class="page-loader" id="pageLoader">
-    <div class="loader-spinner"></div>
+  <div class="loader-spinner"></div>
   </div>
 
   {% include 'includes/header.html' %}
   <main>
-    {% block content %}
-    <!-- Content goes here -->
-     
-    {% endblock %}
+  {% block content %}{% endblock %}
   </main>
   {% include 'includes/footer.html' %}
   
   <!-- Scroll to Top Button -->
-  <button class="scroll-to-top" id="scrollToTop" onclick="scrollToTop()">
-    <i class="fas fa-arrow-up"></i>
+  <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top">
+  <i class="fas fa-arrow-up"></i>
   </button>
   
-  <!-- AOS Animation Script -->
+  <!-- Load non-critical CSS asynchronously -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
+  
+  <link rel="stylesheet" href="{% static 'assets/css/aos.css' %}" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="{% static 'assets/css/aos.css' %}"></noscript>
+  
+  <!-- Optimized JavaScript -->
+  <script>
+  // Inline critical JavaScript for immediate execution
+  (function() {
+    // Page Loader
+    function hideLoader() {
+    const loader = document.getElementById('pageLoader');
+    if (loader) {
+      setTimeout(() => loader.classList.add('hidden'), 500);
+    }
+    }
+    
+    if (document.readyState === 'complete') {
+    hideLoader();
+    } else {
+    window.addEventListener('load', hideLoader);
+    }
+    
+    // Scroll to Top functionality
+    let scrollBtn;
+    let ticking = false;
+    
+    function updateScrollButton() {
+    if (!scrollBtn) scrollBtn = document.getElementById('scrollToTop');
+    if (scrollBtn) {
+      if (window.pageYOffset > 300) {
+      scrollBtn.classList.add('visible');
+      } else {
+      scrollBtn.classList.remove('visible');
+      }
+    }
+    ticking = false;
+    }
+    
+    function onScroll() {
+    if (!ticking) {
+      requestAnimationFrame(updateScrollButton);
+      ticking = true;
+    }
+    }
+    
+    window.addEventListener('scroll', onScroll, { passive: true });
+    
+    window.scrollToTop = function() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+    
+    // Navigation active state
+    function updateActiveNavigation() {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('nav a, #mobile-menu a');
+    
+    navLinks.forEach(link => {
+      link.classList.remove('active-nav');
+      const linkPath = new URL(link.href, window.location.origin).pathname;
+      
+      if (currentPath === linkPath || (currentPath !== '/' && linkPath !== '/' && currentPath.startsWith(linkPath))) {
+      link.classList.add('active-nav');
+      }
+    });
+    
+    // Special handling for products dropdown
+    if (currentPath.includes('/products/')) {
+      const productsDropdown = document.querySelector('#products-dropdown > div');
+      if (productsDropdown) {
+      productsDropdown.classList.add('active-nav');
+      }
+    }
+    }
+    
+    if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', updateActiveNavigation);
+    } else {
+    updateActiveNavigation();
+    }
+    
+    // Show loader on navigation
+    document.addEventListener('click', function(e) {
+    const link = e.target.closest('a');
+    if (link && link.href && !link.href.includes('#') && link.target !== '_blank' && link.hostname === window.location.hostname) {
+      const loader = document.getElementById('pageLoader');
+      if (loader) loader.classList.remove('hidden');
+    }
+    }, { passive: true });
+  })();
+  </script>
+  
+  <!-- Load non-critical scripts -->
   <script src="{% static 'assets/js/aos.js' %}" defer></script>
   <script src="{% static 'assets/js/includes/header.js' %}" defer></script>
   <script>
-    // Initialize AOS when script loads
-    document.addEventListener('DOMContentLoaded', function() {
-      if (typeof AOS !== 'undefined') {
-        AOS.init({
-          duration: 800,
-          once: true,
-          offset: 100
-        });
-      }
+  // Initialize AOS when available
+  function initAOS() {
+    if (typeof AOS !== 'undefined') {
+    AOS.init({
+      duration: 800,
+      once: true,
+      offset: 100
     });
+    }
+  }
+  
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAOS);
+  } else {
+    initAOS();
+  }
   </script>
   
-  <!-- Page Loader, Scroll to Top, and Navigation Scripts -->
-  <script defer>
-    // Page Loader
-    window.addEventListener('load', function() {
-      const loader = document.getElementById('pageLoader');
-      setTimeout(() => {
-        loader.classList.add('hidden');
-      }, 500);
-    });
-    
-    // Show loader on page navigation (for links)
-    document.addEventListener('click', function(e) {
-      const link = e.target.closest('a');
-      if (link && link.href && !link.href.includes('#') && !link.target === '_blank' && link.hostname === window.location.hostname) {
-        const loader = document.getElementById('pageLoader');
-        loader.classList.remove('hidden');
-      }
-    });
-    
-    // Scroll to Top functionality
-    const scrollToTopBtn = document.getElementById('scrollToTop');
-    
-    window.addEventListener('scroll', function() {
-      if (window.pageYOffset > 300) {
-        scrollToTopBtn.classList.add('visible');
-      } else {
-        scrollToTopBtn.classList.remove('visible');
-      }
-    });
-    
-    function scrollToTop() {
-      window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-      });
-    }
-    
-    // Auto scroll to top on route changes (for SPA-like behavior)
-    let currentUrl = window.location.href;
-    setInterval(function() {
-      if (window.location.href !== currentUrl) {
-        currentUrl = window.location.href;
-        window.scrollTo(0, 0);
-      }
-    }, 100);
-    
-    // Navigation active state
-    document.addEventListener('DOMContentLoaded', function() {
-      updateActiveNavigation();
-    });
-    
-    function updateActiveNavigation() {
-      const currentPath = window.location.pathname;
-      const navLinks = document.querySelectorAll('nav a, #mobile-menu a');
-      
-      navLinks.forEach(link => {
-        link.classList.remove('active-nav');
-        const linkPath = new URL(link.href, window.location.origin).pathname;
-        
-        if (currentPath === linkPath || (currentPath !== '/' && linkPath !== '/' && currentPath.startsWith(linkPath))) {
-          link.classList.add('active-nav');
-        }
-      });
-      
-      // Special handling for products dropdown
-      if (currentPath.includes('/products/')) {
-        const productsDropdown = document.querySelector('#products-dropdown > div');
-        if (productsDropdown) {
-          productsDropdown.classList.add('active-nav');
-        }
-      }
-    }
-  </script>
-  
-  {% block extra_scripts %}
-  
-  {% endblock %}
+  {% block extra_scripts %}{% endblock %}
 
 </body>
 </html>
-
-
-
