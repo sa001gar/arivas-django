@@ -13,7 +13,6 @@
     <link rel="canonical" href="{{ request.build_absolute_uri }}" />
 
     {% tailwind_css %}
-    {% comment %} {% tailwind_preload_css %} {% endcomment %}
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="{{ seo_meta_title }}">
@@ -31,7 +30,7 @@
 
     
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="{% static 'assets/css/base.css' %}">
+    {% comment %} <link rel="stylesheet" href="{% static 'assets/css/base.css' %}"> {% endcomment %}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"></noscript>
     
@@ -175,6 +174,18 @@
   <!-- AOS Animation Script -->
   <script src="{% static 'assets/js/aos.js' %}" defer></script>
   <script src="{% static 'assets/js/includes/header.js' %}" defer></script>
+  <script>
+    // Initialize AOS when script loads
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof AOS !== 'undefined') {
+        AOS.init({
+          duration: 800,
+          once: true,
+          offset: 100
+        });
+      }
+    });
+  </script>
   
   <!-- Page Loader, Scroll to Top, and Navigation Scripts -->
   <script>
