@@ -82,8 +82,8 @@ INSTALLED_APPS = [
 
 
 TAILWIND_APP_NAME = 'theme'
-# NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
-NPM_BIN_PATH = '/usr/bin/npm'
+NPM_BIN_PATH = r"C:\Program Files\nodejs\npm.cmd"
+# NPM_BIN_PATH = '/usr/bin/npm'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -132,6 +132,29 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     }
+}
+
+# Cache configuration
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+        'TIMEOUT': 300,  # 5 minutes default
+        'OPTIONS': {
+            'MAX_ENTRIES': 1000,
+            'CULL_FREQUENCY': 3,
+        }
+    }
+}
+
+# Cache keys timeout configuration
+CACHE_TIMEOUT_SETTINGS = {
+    'home_page': 300,      # 5 minutes
+    'about_page': 3600,    # 1 hour
+    'products': 600,       # 10 minutes
+    'blog_posts': 900,     # 15 minutes
+    'price_list': 1800,    # 30 minutes
+    'api_data': 300,       # 5 minutes
 }
 
 
