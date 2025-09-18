@@ -30,13 +30,13 @@
             
             <!-- Desktop Navigation -->
             <div class="hidden lg:flex items-center space-x-8">
-                <a href="/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Home</a>
-                <a href="/about/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">About</a>
-                
+                <a href="/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium {% if request.path == '/' %} text-arivas-red {% endif %}">Home</a>
+                <a href="/about/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium {% if request.path == '/about/' %} text-arivas-red {% endif %}">About</a>
+
                 <!-- Products Dropdown -->
                 <div class="relative group" id="products-dropdown">
                     <a href="/products/" class="flex items-center space-x-1 text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">
-                        <span>Products</span>
+                        <span class="{% if request.path == '/products' %}text-arivas-red {% endif %}"> Products</span>
                         <svg class="h-4 w-4 transition-transform duration-300 group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                         </svg>
@@ -45,17 +45,17 @@
                         <div class="py-1" id="product-categories">
                             
                             {% for category in product_categories %}
-                                <a href="/products/category/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300">{{ category.name }}</a>
+                                <a href="/products/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300">{{ category.name }}</a>
                             {% endfor %}
-                            <a href="/products/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300 font-semibold border-b border-gray-100">All Products</a>
+                            {% comment %} <a href="/products/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300 font-semibold border-b border-gray-100">All Products</a> {% endcomment %}
                         </div>
                     </div>
                 </div>
-                
-                <a href="/contact/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Contact</a>
-                <a href="/blog/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Blog</a>
-                <a href="/price-list/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium">Price List</a>
-                <a href="/enquiry/" class="bg-arivas-red hover:bg-arivas-red/90 text-white px-6 py-2 rounded">Enquiry</a>
+
+                <a href="/contact/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium {% if request.path == '/contact/' %} text-arivas-red {% endif %}">Contact</a>
+                <a href="/blog/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium {% if request.path == '/blog/' %} text-arivas-red {% endif %}">Blog</a>
+                <a href="/price-list/" class="text-arivas-dark hover:text-arivas-red transition-colors duration-300 font-medium {% if request.path == '/price-list/' %} text-arivas-red {% endif %}">Price List</a>
+                <a href="/enquiry/" class="bg-arivas-red hover:bg-arivas-red/90 text-white px-6 py-2 rounded {% if request.path == '/enquiry/' %} bg-arivas-red/90 {% endif %}">Enquiry</a>
             </div>
 
             <!-- Mobile Menu Button -->
