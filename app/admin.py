@@ -136,7 +136,7 @@ class BlogPostAdmin(ModelAdmin, SummernoteModelAdmin):
         ('published_date', RangeDateFilter),
         ('created_at', RangeDateFilter)
     ]
-    search_fields = ['title', 'content', 'author', 'tags']
+    search_fields = ['title', 'content', 'author', 'seo_meta_keywords']
     prepopulated_fields = {'slug': ('title',)}
     readonly_fields = ['created_at', 'updated_at']
     
@@ -153,8 +153,8 @@ class BlogPostAdmin(ModelAdmin, SummernoteModelAdmin):
             'fields': ('published_date', 'is_featured'),
             'classes': ('unfold-fieldset',)
         }),
-        ('SEO & Tags', {
-            'fields': ('meta_description', 'tags'),
+        ('SEO & Meta', {
+            'fields': ('seo_meta_title', 'seo_meta_description', 'seo_meta_keywords'),
             'classes': ('collapse', 'unfold-fieldset')
         }),
         ('Timestamps', {

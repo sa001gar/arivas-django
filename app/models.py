@@ -4,6 +4,7 @@ from io import BytesIO
 from django.core.files.base import ContentFile
 from django.utils.text import slugify
 from django_summernote.fields import SummernoteTextField
+import os
 
 # Create your models here.
 class ProductCategory(models.Model):
