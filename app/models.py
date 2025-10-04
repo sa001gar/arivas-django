@@ -80,7 +80,9 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
+
         if self.image:
+            # Open and crop image
             img = Image.open(self.image)
             min_dim = min(img.size)
             left = (img.width - min_dim) // 2
@@ -88,11 +90,18 @@ class Product(models.Model):
             right = left + min_dim
             bottom = top + min_dim
             img = img.crop((left, top, right, bottom))
+
+            # Convert to JPEG
             buffer = BytesIO()
             img.save(buffer, format='JPEG', quality=85)
             buffer.seek(0)
-            self.image.save(self.image.name, ContentFile(buffer.read()), save=False)
+
+            # Extract only the filename (not the path)
+            filename = os.path.basename(self.image.name)
+            self.image.save(filename, ContentFile(buffer.read()), save=False)
+
         super().save(*args, **kwargs)
+        
 
     def get_seo_tags_list(self):
         """
