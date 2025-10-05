@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'django_summernote',
     'tailwind',
     'theme',  # Your Tailwind CSS app
+    'fontawesomefree',
     'whitenoise.runserver_nostatic',  # Keep WhiteNoise for static file serving
 ]
 
