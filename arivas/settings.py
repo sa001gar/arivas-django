@@ -30,7 +30,7 @@ DEBUG = os.getenv("DEBUG", "True").lower() in ("true", "1", "t")
 
 
 if DEBUG:
-    ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+    ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'arivaspharma.co.in', 'www.arivaspharma.co.in']
 else:
     ALLOWED_HOSTS = ['arivaspharma.co.in', 'www.arivaspharma.co.in']
 
