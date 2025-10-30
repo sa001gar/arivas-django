@@ -222,7 +222,7 @@ SUMMERNOTE_CONFIG = {
     "summernote": {
         "airMode": False,
         "width": "100%",
-        "height": "400",
+        "height": 400,
         "codemirror": {
             "mode": "htmlmixed",
             "lineNumbers": True,
