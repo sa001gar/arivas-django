@@ -44,7 +44,7 @@ def home(request):
         best_selling_products = Product.objects.none()
 
     if page_content:
-        seo_meta_title = page_content.seo_meta_title or "Home"
+        seo_meta_title = page_content.seo_meta_title or ""
         seo_meta_description = page_content.seo_meta_description or ""
         seo_meta_keywords = ', '.join(page_content.get_seo_keywords_list())
         content1 = page_content.content1 or ""
@@ -53,7 +53,7 @@ def home(request):
         content4 = page_content.content4 or ""
         content5 = page_content.content5 or ""
     else:
-        seo_meta_title = "Home"
+        seo_meta_title = ""
         seo_meta_description = ""
         seo_meta_keywords = ""
         content1 = content2 = content3 = content4 = content5 = ""
