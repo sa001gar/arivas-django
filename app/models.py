@@ -10,7 +10,7 @@ import os
 class ProductCategory(models.Model):
     """ Product Category model with name, description, slug, icon, and SEO fields """
     name = models.CharField(max_length=100)
-    description = models.TextField()
+    description = SummernoteTextField()
     slug = models.SlugField(unique=True)
     icon = models.CharField(max_length=100, blank=True, null=True)  # Assuming you store icon class names or paths
     
