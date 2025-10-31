@@ -53,7 +53,7 @@
             <!-- Content -->
             <div class="flex-1 flex flex-col p-5">
               <h3 class="text-lg font-bold text-arivas-dark mb-2">{{ product.name }}</h3>
-              <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ product.description | safe }}</p>
+              {% comment %} <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ product.description | safe }}</p> {% endcomment %}
               <div class="mt-auto flex flex-col gap-2">
                 <a href="/products/{{ product.category.slug }}/{{ product.slug }}/" class="w-full inline-block text-center bg-arivas-red hover:bg-red-700 text-white font-semibold py-2 rounded transition">View Product</a>
                 <a href="/enquiry/?sku={{ product.sku }}" class="w-full inline-block text-center border-2 border-arivas-red text-arivas-red hover:bg-arivas-red hover:text-white font-semibold py-2 rounded transition">Send Enquiry</a>
