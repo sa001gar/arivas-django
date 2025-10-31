@@ -15,6 +15,7 @@ from django.template import Template, Context
 from django.template.loader import get_template
 from django.utils.safestring import mark_safe
 from django.views.decorators.cache import cache_page
+from django.utils.html import strip_tags
 
 def render_dynamic_content(content, context_dict=None):
     if not content:
@@ -504,13 +505,13 @@ def api_products(request):
         for p in products:
             data.append({
                 'id': p.id,
-                'name': p.name,
+                'name': strip_tags(p.name),
                 'slug': p.slug,
-                'description': p.description[:200] + '...' if len(p.description) > 200 else p.description,  # Limit description length
+                'description': strip_tags(p.description)[:200] + '...' if len(strip_tags(p.description)) > 200 else strip_tags(p.description),
                 'image': p.image.url if p.image else '',
                 'category': {
                     'id': p.category.id,
-                    'name': p.category.name,
+                    'name': strip_tags(p.category.name),
                     'slug': p.category.slug,
                 } if p.category else None,
             })
