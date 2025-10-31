@@ -317,7 +317,7 @@ def products(request):
     })
 
 
-# @cache_page(60 * 15)  # Cache for 15 minutes
+@cache_page(60 * 15)  # Cache for 15 minutes
 def category_products(request, category_slug):
     # Optimize product_categories query with prefetch_related
     product_categories = ProductCategory.objects.select_related().prefetch_related('products')
