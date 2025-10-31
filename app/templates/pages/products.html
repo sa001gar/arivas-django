@@ -48,7 +48,7 @@
       </template>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" x-show="!loading">
         <template x-for="product in filteredProducts" :key="product.id">
-          <div class="group relative overflow-hidden rounded-2xl bg-white shadow-premium shadow-xl transition-all">
+          <div class="group relative overflow-hidden rounded-2xl bg-white shadow-premium  transition-all">
             <a :href="`/products/${product.category.slug}/${product.slug}/`" class="block">
               <div class="aspect-square w-full overflow-hidden relative">
                 <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
@@ -62,7 +62,7 @@
               </div>
               <div class="p-4">
                 <h3 class="text-base font-bold text-arivas-dark mb-1" x-text="product.name"></h3>
-                <p class="text-gray-600 text-sm line-clamp-2" x-text="{{ product.description | safe }}"></p>
+                {% comment %} <p class="text-gray-600 text-sm line-clamp-2" x-text="product.description"></p> {% endcomment %}
               </div>
             </a>
           </div>
