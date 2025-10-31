@@ -62,7 +62,7 @@ class Product(models.Model):
     name = models.CharField(max_length=200)
     sku = models.CharField(max_length=100,unique=False, help_text="Stock Keeping Unit - unique product identifier")
     slug = models.SlugField(unique=True, blank=True)  # Allow blank so it can be auto-filled
-    description = models.TextField(help_text="Short description for Page Preview")
+    description =SummernoteTextField()
     content=SummernoteTextField()  # Rich text with Summernote
     category = models.ForeignKey(ProductCategory, on_delete=models.CASCADE, related_name='products')
     image = models.ImageField(upload_to='products/')

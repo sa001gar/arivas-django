@@ -56,11 +56,9 @@
         </span>
       </div>
       {% endif %}
-      
-      <p class="text-gray-700 leading-relaxed mb-6">{{ product.description }}</p>
-      
-      
-      
+
+      <p class="text-gray-700 leading-relaxed mb-6">{{ product.description | safe }}</p>
+
       <div class="flex flex-wrap gap-3 my-8">
         <span class="px-3 py-1 rounded-full bg-arivas-red/10 text-arivas-red text-sm">{{ product.category.name }}</span>
         {% if product.status %}
