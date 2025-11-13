@@ -99,7 +99,7 @@
                     </button>
                     <div class="hidden flex-col pl-6 mt-2 space-y-2" id="mobile-product-categories">
                         {% for category in product_categories %}
-                            <a href="/products/category/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300" onclick="closeMobileMenu()">{{ category.name }}</a>
+                            <a href="/products/{{ category.slug }}/" class="block px-4 py-2 text-sm text-arivas-dark hover:bg-gray-100 transition-colors duration-300" onclick="closeMobileMenu()">{{ category.name }}</a>
                         {% endfor %}
                     </div>
                 </div>
