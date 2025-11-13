@@ -169,7 +169,7 @@
     <!-- Optimized JavaScript -->
     <script>
       // Inline critical JavaScript for immediate execution
-      ;(function () {
+      function () {
         // Page Loader
         function hideLoader() {
           const loader = document.getElementById('pageLoader')
@@ -225,7 +225,7 @@
           },
           { passive: true }
         )
-      })()
+      }()
     </script>
 
     <!-- Load non-critical scripts -->
