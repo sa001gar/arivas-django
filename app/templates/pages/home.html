@@ -128,7 +128,7 @@
                 </span>
               </div>
               <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-arivas-red transition-colors">{{ product.name }}</h3>
-              <p class="text-gray-600 mb-4 text-sm leading-relaxed line-clamp-4">{{ product.description | until_period }}</p>
+              <p class="text-gray-600 mb-4 text-sm leading-relaxed line-clamp-4">{{ product.description | until_period | safe | striptags}}</p>
               
               <!-- Action Buttons -->
               <div class="flex gap-3">
