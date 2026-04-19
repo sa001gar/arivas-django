@@ -27,9 +27,9 @@ WORKDIR /app
 
 COPY --from=uv /uv /usr/local/bin/uv
 
-COPY requirements.txt docker/requirements.extra.txt ./
+COPY requirements.txt docker/requirements.docker.txt ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip sync --system requirements.txt requirements.extra.txt
+    uv pip sync --system requirements.docker.txt
 
 COPY . .
 
