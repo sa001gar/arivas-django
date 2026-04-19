@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
+import sys
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -292,9 +293,16 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+RUNNING_RUNSERVER = len(sys.argv) > 1 and sys.argv[1] == 'runserver'
+USE_MANIFEST_STATICFILES = env_bool('USE_MANIFEST_STATICFILES', not DEBUG)
+
+# Allow local DEBUG=False runserver without forcing collectstatic beforehand.
+if RUNNING_RUNSERVER and USE_MANIFEST_STATICFILES and not (STATIC_ROOT / 'staticfiles.json').exists():
+    USE_MANIFEST_STATICFILES = False
+
 STATICFILES_STORAGE_BACKEND = (
     "django.contrib.staticfiles.storage.StaticFilesStorage"
-    if DEBUG
+    if DEBUG or not USE_MANIFEST_STATICFILES
     else "arivas.storage_backends.ManifestStaticFilesStorageNoSourceMaps"
 )
 
@@ -372,15 +380,17 @@ if USE_R2:
     }
 
 
-# # Additional security settings
+# Additional security settings
 if not DEBUG:
     SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-    SECURE_SSL_REDIRECT = True
-    SESSION_COOKIE_SECURE = True
-    CSRF_COOKIE_SECURE = True
-    # SECURE_HSTS_SECONDS = 31536000
-    # SECURE_HSTS_INCLUDE_SUBDOMAINS = True
-    # SECURE_HSTS_PRELOAD = True
+    # Keep redirect configurable to avoid proxy redirect loops in some deployments.
+    SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", False)
+    SECURE_HSTS_SECONDS = env_int(
+        "SECURE_HSTS_SECONDS",
+        31536000 if SECURE_SSL_REDIRECT else 0,
+    )
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+    SECURE_HSTS_PRELOAD = env_bool("SECURE_HSTS_PRELOAD", False)
     # SECURE_REFERRER_POLICY = "strict-origin"
     # SECURE_BROWSER_XSS_FILTER = True
     # SECURE_CONTENT_TYPE_NOSNIFF = True

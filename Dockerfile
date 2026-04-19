@@ -2,7 +2,7 @@ FROM ghcr.io/astral-sh/uv:latest AS uv
 FROM python:3.14-slim
 
 ARG DEBUG=False
-ARG USE_R2=True
+ARG USE_R2=False
 ARG ALLOWED_HOSTS=
 ARG CSRF_TRUSTED_ORIGINS=
 ARG R2_PUBLIC_MEDIA_URL=
