@@ -6,7 +6,7 @@ ARG USE_R2=True
 ARG ALLOWED_HOSTS=
 ARG CSRF_TRUSTED_ORIGINS=
 ARG R2_PUBLIC_MEDIA_URL=
-ARG PORT=8000
+ARG PORT=8080
 ARG GUNICORN_WORKERS=3
 ARG GUNICORN_TIMEOUT=120
 
@@ -27,9 +27,9 @@ WORKDIR /app
 
 COPY --from=uv /uv /usr/local/bin/uv
 
-COPY requirements.txt docker/requirements.docker.txt ./
+COPY requirements.txt ./
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip sync --system requirements.docker.txt
+    uv pip sync --system requirements.txt
 
 COPY . .
 
