@@ -191,6 +191,12 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+STATICFILES_STORAGE_BACKEND = (
+    "arivas.storage_backends.ManifestStaticFilesStorageNoSourceMaps"
+    if not DEBUG
+    else "django.contrib.staticfiles.storage.StaticFilesStorage"
+)
+
 if USE_R2:
     if "storages" not in INSTALLED_APPS:
         INSTALLED_APPS.append("storages")
@@ -244,8 +250,7 @@ if USE_R2:
             },
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if not DEBUG
-            else "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": STATICFILES_STORAGE_BACKEND,
         },
     }
 else:
@@ -254,8 +259,7 @@ else:
             "BACKEND": "django.core.files.storage.FileSystemStorage",
         },
         "staticfiles": {
-            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage" if not DEBUG
-            else "django.contrib.staticfiles.storage.StaticFilesStorage",
+            "BACKEND": STATICFILES_STORAGE_BACKEND,
         },
     }
 

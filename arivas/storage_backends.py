@@ -2,6 +2,7 @@ from urllib.parse import quote, urljoin
 
 from django.conf import settings
 from storages.backends.s3 import S3Storage
+from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
 class PublicMediaURLS3Storage(S3Storage):
@@ -21,3 +22,19 @@ class PublicMediaURLS3Storage(S3Storage):
             expire=expire,
             http_method=http_method,
         )
+
+
+class ManifestStaticFilesStorageNoSourceMaps(CompressedManifestStaticFilesStorage):
+    """Ignore source map URL rewrites so missing vendor .map files don't break collectstatic."""
+
+    patterns = tuple(
+        (
+            extension,
+            tuple(
+                pattern
+                for pattern in extension_patterns
+                if "sourceMappingURL" not in pattern[0]
+            ),
+        )
+        for extension, extension_patterns in CompressedManifestStaticFilesStorage.patterns
+    )
