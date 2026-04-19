@@ -238,7 +238,7 @@
               <!-- Product Info -->
               <div class="flex-1 min-w-0">
                 <h4 class="text-sm font-semibold text-gray-900 mb-1 line-clamp-1">{{ product.name }}</h4>
-                <p class="text-xs text-gray-600 mb-2 line-clamp-2">{{ product.description|truncatewords:10 }}</p>
+                <p class="text-xs text-gray-600 mb-2 line-clamp-2">{{ product.description|truncatewords:10 | safe | striptags }}</p>
                 {% if product.sku %}
                 <p class="text-xs text-arivas-red font-mono mb-2">SKU: {{ product.sku }}</p>
                 {% endif %}
