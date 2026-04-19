@@ -1,0 +1,39 @@
+services:
+  web:
+    container_name: arivas-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        DEBUG: ${DEBUG:-False}
+        USE_R2: ${USE_R2:-True}
+        ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
+        CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
+        R2_PUBLIC_MEDIA_URL: ${R2_PUBLIC_MEDIA_URL:-}
+        PORT: ${PORT:-8000}
+        GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+        GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+    env_file:
+      - .env
+    environment:
+      DEBUG: ${DEBUG:-False}
+      SECRET_KEY: ${SECRET_KEY}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-}
+      CSRF_TRUSTED_ORIGINS: ${CSRF_TRUSTED_ORIGINS:-}
+
+      USE_R2: ${USE_R2:-True}
+      R2_ACCOUNT_ID: ${R2_ACCOUNT_ID:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      R2_BUCKET_NAME: ${R2_BUCKET_NAME:-}
+      R2_REGION: ${R2_REGION:-auto}
+      R2_ENDPOINT_URL: ${R2_ENDPOINT_URL:-}
+      R2_PUBLIC_MEDIA_URL: ${R2_PUBLIC_MEDIA_URL:-}
+      R2_CACHE_CONTROL: ${R2_CACHE_CONTROL:-public, max-age=86400}
+
+      PORT: ${PORT:-8000}
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+      GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+    ports:
+      - "${PORT:-8000}:8000"
+    restart: unless-stopped
