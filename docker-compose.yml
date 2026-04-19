@@ -1,6 +1,5 @@
 services:
   web:
-    container_name: arivas-web
     build:
       context: .
       dockerfile: Dockerfile
@@ -34,4 +33,6 @@ services:
       PORT: ${PORT:-8000}
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
       GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
+    expose:
+      - "8000"
     restart: unless-stopped
