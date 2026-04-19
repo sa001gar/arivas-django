@@ -37,6 +37,6 @@ services:
       PORT: ${PORT:-8080}
       GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
       GUNICORN_TIMEOUT: ${GUNICORN_TIMEOUT:-120}
-    ports:
-      - "${PORT:-8080}:${PORT:-8080}"
+    expose:
+      - "${PORT:-8080}"
     restart: unless-stopped
