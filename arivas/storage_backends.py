@@ -11,6 +11,20 @@ def _is_sourcemap_pattern(pattern):
     return "sourceMappingURL" in pattern_text or "sourceURL" in pattern_text
 
 
+def _strip_sourcemap_patterns(all_patterns):
+    return tuple(
+        (
+            extension,
+            tuple(
+                pattern
+                for pattern in extension_patterns
+                if not _is_sourcemap_pattern(pattern)
+            ),
+        )
+        for extension, extension_patterns in all_patterns
+    )
+
+
 class PublicMediaURLS3Storage(S3Storage):
     """Build media URLs from the configured public R2 URL."""
 
@@ -33,14 +47,4 @@ class PublicMediaURLS3Storage(S3Storage):
 class ManifestStaticFilesStorageNoSourceMaps(CompressedManifestStaticFilesStorage):
     """Ignore source map URL rewrites so missing vendor .map files don't break collectstatic."""
 
-    patterns = tuple(
-        (
-            extension,
-            tuple(
-                pattern
-                for pattern in extension_patterns
-                if not _is_sourcemap_pattern(pattern)
-            ),
-        )
-        for extension, extension_patterns in CompressedManifestStaticFilesStorage.patterns
-    )
+    patterns = _strip_sourcemap_patterns(CompressedManifestStaticFilesStorage.patterns)
