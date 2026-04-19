@@ -365,7 +365,7 @@ class ContactFormSubmissionAdmin(ModelAdmin):
 
 @admin.register(Enquiry)
 class EnquiryAdmin(ModelAdmin):
-    list_display = ['sku_display', 'name', 'email', 'phone', 'subject', 'submitted_date', 'response_status', 'priority_badge']
+    list_display = ['sku_display', 'customer_name', 'email_display', 'phone_display', 'subject_preview', 'submitted_on', 'response_status', 'priority_badge']
     list_filter = [
         ResponseStatusFilter,
         SKUFilter,
@@ -375,6 +375,7 @@ class EnquiryAdmin(ModelAdmin):
     readonly_fields = ['sku', 'name', 'email', 'phone', 'subject', 'message', 'ip_address', 'submitted_date']
     list_per_page = 20
     date_hierarchy = 'submitted_date'
+    list_display_links = ['customer_name']
     
     fieldsets = (
         ('Enquiry Information', {
@@ -395,21 +396,53 @@ class EnquiryAdmin(ModelAdmin):
     def sku_display(self, obj):
         if obj.sku:
             return format_html(
-                '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 font-mono">{}</span>',
+                '<span class="enquiry-badge enquiry-badge--sku" title="{}">{}</span>',
+                obj.sku,
                 obj.sku
             )
         return format_html(
-            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">General</span>'
+            '<span class="enquiry-badge enquiry-badge--general">General</span>'
+        )
+
+    @display(ordering='name', description='Name')
+    def customer_name(self, obj):
+        return format_html('<span class="enquiry-name">{}</span>', obj.name)
+
+    @display(ordering='email', description='Email')
+    def email_display(self, obj):
+        return format_html(
+            '<a href="mailto:{}" class="enquiry-email" title="{}">{}</a>',
+            obj.email,
+            obj.email,
+            obj.email,
+        )
+
+    @display(ordering='phone', description='Phone')
+    def phone_display(self, obj):
+        phone = obj.phone or 'N/A'
+        return format_html('<span class="enquiry-phone">{}</span>', phone)
+
+    @display(ordering='subject', description='Subject')
+    def subject_preview(self, obj):
+        return format_html('<span class="enquiry-subject" title="{}">{}</span>', obj.subject, obj.subject)
+
+    @display(ordering='submitted_date', description='Submitted')
+    def submitted_on(self, obj):
+        local_dt = timezone.localtime(obj.submitted_date)
+        return format_html(
+            '<span class="enquiry-date">{}</span><span class="enquiry-time">{}</span>',
+            local_dt.strftime('%b %d, %Y'),
+            local_dt.strftime('%I:%M %p')
         )
     
     @display(description="Response Status")
     def response_status(self, obj):
         if obj.is_responded:
             return format_html(
-                '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">✓ Responded</span>'
+                '<span class="enquiry-badge enquiry-badge--responded">Responded</span>'
             )
         return format_html(
-            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">Pending</span>'
+            '<span class="enquiry-badge enquiry-badge--pending">Pending</span>'
         )
     
     @display(description="Priority")
@@ -422,14 +455,14 @@ class EnquiryAdmin(ModelAdmin):
             time_diff = timezone.now() - obj.submitted_date
             if time_diff > timedelta(hours=24):
                 return format_html(
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">Urgent</span>'
+                    '<span class="enquiry-badge enquiry-badge--urgent">Urgent</span>'
                 )
             elif time_diff > timedelta(hours=12):
                 return format_html(
-                    '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">High</span>'
+                    '<span class="enquiry-badge enquiry-badge--high">High</span>'
                 )
         return format_html(
-            '<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">Normal</span>'
+            '<span class="enquiry-badge enquiry-badge--normal">Normal</span>'
         )
     
     @action(description="Mark as responded")
@@ -492,6 +525,11 @@ class EnquiryAdmin(ModelAdmin):
         }
         
         return super().changelist_view(request, extra_context=extra_context)
+
+    class Media:
+        css = {
+            'all': ('assets/css/admin/enquiry-admin.css',)
+        }
 
 
 # Customize Admin Site

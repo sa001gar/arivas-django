@@ -102,3 +102,5 @@ test-results/
 *.swp
 *.swo
 *~
+
+/products

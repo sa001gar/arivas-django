@@ -1,0 +1,132 @@
+#result_list th.column-sku_display,
+#result_list td.field-sku_display {
+  width: 150px;
+}
+
+#result_list th.column-customer_name,
+#result_list td.field-customer_name {
+  min-width: 170px;
+}
+
+#result_list th.column-email_display,
+#result_list td.field-email_display {
+  min-width: 220px;
+}
+
+#result_list th.column-phone_display,
+#result_list td.field-phone_display {
+  min-width: 130px;
+}
+
+#result_list th.column-subject_preview,
+#result_list td.field-subject_preview {
+  min-width: 230px;
+}
+
+#result_list th.column-submitted_on,
+#result_list td.field-submitted_on {
+  min-width: 130px;
+}
+
+.enquiry-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.26rem 0.62rem;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.enquiry-badge--sku {
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: #e7efff;
+  color: #1847a8;
+}
+
+.enquiry-badge--general {
+  background: #eceff3;
+  color: #475569;
+}
+
+.enquiry-badge--responded {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.enquiry-badge--pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.enquiry-badge--urgent {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.enquiry-badge--high {
+  background: #ffedd5;
+  color: #c2410c;
+}
+
+.enquiry-badge--normal {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.enquiry-name {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.enquiry-email {
+  display: inline-block;
+  max-width: 220px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #0f4c81;
+  text-decoration: none;
+}
+
+.enquiry-email:hover {
+  text-decoration: underline;
+}
+
+.enquiry-phone {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: #1e293b;
+}
+
+.enquiry-subject {
+  display: -webkit-box;
+  max-width: 290px;
+  overflow: hidden;
+  color: #334155;
+  line-height: 1.3;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.enquiry-date,
+.enquiry-time {
+  display: block;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.enquiry-date {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.enquiry-time {
+  margin-top: 0.18rem;
+  font-size: 0.72rem;
+  color: #64748b;
+}
