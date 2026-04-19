@@ -1,3 +1,4 @@
+FROM ghcr.io/astral-sh/uv:latest AS uv
 FROM python:3.14-slim
 
 ARG DEBUG=False
@@ -12,6 +13,7 @@ ARG GUNICORN_TIMEOUT=120
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     UV_SYSTEM_PYTHON=1 \
+    UV_LINK_MODE=copy \
     DEBUG=${DEBUG} \
     USE_R2=${USE_R2} \
     ALLOWED_HOSTS=${ALLOWED_HOSTS} \
@@ -23,11 +25,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-RUN pip install --no-cache-dir uv
+COPY --from=uv /uv /usr/local/bin/uv
 
-COPY requirements.txt ./
-RUN uv pip install --system -r requirements.txt \
-    && uv pip install --system django-storages boto3
+COPY requirements.txt docker/requirements.extra.txt ./
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip sync --system requirements.txt requirements.extra.txt
 
 COPY . .
 
