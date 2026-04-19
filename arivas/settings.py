@@ -11,7 +11,11 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 import os
 from pathlib import Path
+from urllib.parse import urlparse
+
 from django.core.exceptions import ImproperlyConfigured
+from django.templatetags.static import static
+from django.utils.functional import lazy
 from dotenv import load_dotenv
 
 load_dotenv()  # Load environment variables from .env file
@@ -46,6 +50,67 @@ def env_list(name, default=None):
         return list(default or [])
     return [item.strip() for item in value.split(",") if item.strip()]
 
+
+def _normalize_host(value):
+    host = (value or "").strip()
+    if not host:
+        return ""
+
+    if "://" in host:
+        parsed = urlparse(host)
+        host = parsed.netloc or parsed.path
+
+    host = host.strip().strip("/")
+    if "@" in host:
+        host = host.rsplit("@", 1)[-1]
+
+    if ":" in host and not host.startswith("["):
+        host = host.split(":", 1)[0]
+
+    return host
+
+
+def env_hosts(name, default=None):
+    hosts = []
+    for value in env_list(name, default):
+        host = _normalize_host(value)
+        if host and host not in hosts:
+            hosts.append(host)
+    return hosts
+
+
+def _host_to_origin(host):
+    host = (host or "").strip()
+    if not host or host == "*":
+        return ""
+
+    if host.startswith("."):
+        return f"https://*{host}"
+
+    if host in ("127.0.0.1", "localhost"):
+        return f"http://{host}"
+
+    return f"https://{host}"
+
+
+def normalize_csrf_origins(origins):
+    normalized = []
+    for value in origins:
+        origin = (value or "").strip().rstrip("/")
+        if not origin:
+            continue
+
+        if "://" not in origin:
+            origin = _host_to_origin(_normalize_host(origin))
+
+        if origin and origin not in normalized:
+            normalized.append(origin)
+
+    return normalized
+
+
+lazy_static = lazy(static, str)
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -67,18 +132,20 @@ SECRET_KEY = env_str(
 
 
 default_allowed_hosts = ['127.0.0.1', 'localhost'] if DEBUG else []
-ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", default_allowed_hosts)
+ALLOWED_HOSTS = env_hosts("ALLOWED_HOSTS", default_allowed_hosts)
 if not DEBUG and not ALLOWED_HOSTS:
     raise ImproperlyConfigured("ALLOWED_HOSTS must be set when DEBUG=False")
 
 default_csrf_origins = []
 if not DEBUG:
     default_csrf_origins = [
-        f"https://{host}"
-        for host in ALLOWED_HOSTS
-        if host not in ("127.0.0.1", "localhost")
+        origin
+        for origin in (_host_to_origin(host) for host in ALLOWED_HOSTS)
+        if origin
     ]
-CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", default_csrf_origins)
+CSRF_TRUSTED_ORIGINS = normalize_csrf_origins(
+    env_list("CSRF_TRUSTED_ORIGINS", default_csrf_origins)
+)
 
 CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
 SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
@@ -234,8 +301,8 @@ STATICFILES_STORAGE_BACKEND = (
 WHITENOISE_AUTOREFRESH = DEBUG
 WHITENOISE_USE_FINDERS = DEBUG
 WHITENOISE_KEEP_ONLY_HASHED_FILES = env_bool("WHITENOISE_KEEP_ONLY_HASHED_FILES", not DEBUG)
-# Keep production resilient: missing manifest entries should not crash requests.
-WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", False)
+# Keep strict manifest checks in production to fail fast on broken static references.
+WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", True)
 WHITENOISE_MAX_AGE = env_int("WHITENOISE_MAX_AGE", 60 if DEBUG else 31536000)
 
 # Media files (Uploaded images, etc.)
@@ -355,15 +422,13 @@ SUMMERNOTE_CONFIG = {
         ],
     },
     "css": (
-        "/static/css/dist/styles.css",
-        "/static/assets/css/pages/home.css",
+        lazy_static("css/dist/styles.css"),
+        lazy_static("assets/css/pages/home.css"),
         "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
     ),
     "css_for_inplace": (
-        "/static/css/dist/styles.css",
+        lazy_static("css/dist/styles.css"),
     ),
-    # "js": ("/static/css/","/static/assets/js/tailwind-config.js",
-    #        ),
     "js_for_inplace": (),
     "disable_attachment": False,
     "attachment_require_authentication": True,
@@ -383,12 +448,12 @@ UNFOLD = {
     "SITE_HEADER": "Arivas Admin",
     "SITE_URL": "/",
     "SITE_ICON": {
-        "light": lambda request: "/static/assets/images/logo.avif",  # path to your logo
-        "dark": lambda request: "/static/assets/images/logo.avif",   # path to your logo
+        "light": lambda request: static("assets/images/logo.avif"),
+        "dark": lambda request: static("assets/images/logo.avif"),
     },
     "SITE_LOGO": {
-        "light": lambda request: "/static/assets/images/logo.avif",  # path to your logo
-        "dark": lambda request: "/static/assets/images/logo.avif",   # path to your logo
+        "light": lambda request: static("assets/images/logo.avif"),
+        "dark": lambda request: static("assets/images/logo.avif"),
     },
     "SITE_SYMBOL": "A",  # symbol for the sidebar
     "SITE_FAVICONS": [
@@ -396,7 +461,7 @@ UNFOLD = {
             "rel": "icon",
             "sizes": "32x16",
             "type": "image/png",
-            "href": lambda request: "/static/assets/images/favicon.ico",
+            "href": lambda request: static("assets/images/favicon.ico"),
         },
     ],
     "SHOW_HISTORY": True,

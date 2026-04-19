@@ -1,10 +1,11 @@
 {% extends 'base.html' %}
 {% load custom_filters %}
+{% load static %}
 {% block content %}
 <!-- Page header -->
 <section class="pt-20 md:pt-28 pb-10 text-white">
   <div class="relative overflow-hidden">
-    <div class="absolute inset-0" style="background-image:url('/static/assets/images/page-header.jpeg');background-size:cover;background-position:center"></div>
+    <div class="absolute inset-0" style="background-image:url('{% static "assets/images/page-header.jpeg" %}');background-size:cover;background-position:center"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/60"></div>
     <div class="relative max-w-7xl mx-auto px-4 py-10">
       <h1 class="text-3xl md:text-5xl font-bold mb-2 md:mb-4">{{ product.name }}</h1>
