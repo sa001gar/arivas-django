@@ -1,5 +1,64 @@
 # Arivas Django Deployment Guide
 
+## Dokploy + Cloudflare R2 (Recommended)
+
+This project is now ready to deploy on Dokploy with product/media uploads served from Cloudflare R2.
+
+### 1. Local install with uv
+
+```bash
+uv pip install -r requirements.txt
+uv pip install django-storages boto3
+```
+
+### 2. Configure environment
+
+Create `.env` from `.env.example` and set at least:
+
+- `DEBUG=False`
+- `SECRET_KEY=...`
+- `ALLOWED_HOSTS=...`
+- `CSRF_TRUSTED_ORIGINS=...`
+- `USE_R2=True`
+- `R2_ACCOUNT_ID=...`
+- `R2_ACCESS_KEY_ID=...`
+- `R2_SECRET_ACCESS_KEY=...`
+- `R2_BUCKET_NAME=...`
+- `R2_PUBLIC_MEDIA_URL=...` (custom domain or `*.r2.dev` URL)
+
+### 3. Audit and upload initial product images to R2
+
+Dry-run first:
+
+```bash
+uv run python scripts/sync_products_to_r2.py --dry-run --fix-missing
+```
+
+Then upload:
+
+```bash
+uv run python scripts/sync_products_to_r2.py --fix-missing --skip-existing
+```
+
+### 4. Dokploy service setup
+
+- Build method: Dockerfile
+- Dockerfile path: `./Dockerfile`
+- Exposed port: `8000` (or set `PORT` env)
+- Start command: already handled by `docker/entrypoint.sh`
+
+The container startup does:
+
+1. `python manage.py migrate --noinput`
+2. `python manage.py collectstatic --noinput`
+3. starts Gunicorn on `0.0.0.0:$PORT`
+
+### 5. Persistent data note (SQLite)
+
+If you continue using SQLite in production, mount a Dokploy persistent volume so `db.sqlite3` is not lost between deployments.
+
+---
+
 This guide provides step-by-step instructions to deploy the Arivas Django application on an Ubuntu server using Gunicorn and Nginx, with SSL via Certbot.
 
 ---
