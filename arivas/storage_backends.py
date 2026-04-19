@@ -5,6 +5,12 @@ from storages.backends.s3 import S3Storage
 from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
+def _is_sourcemap_pattern(pattern):
+    match_pattern = pattern[0]
+    pattern_text = getattr(match_pattern, "pattern", str(match_pattern))
+    return "sourceMappingURL" in pattern_text or "sourceURL" in pattern_text
+
+
 class PublicMediaURLS3Storage(S3Storage):
     """Build media URLs from the configured public R2 URL."""
 
@@ -33,7 +39,7 @@ class ManifestStaticFilesStorageNoSourceMaps(CompressedManifestStaticFilesStorag
             tuple(
                 pattern
                 for pattern in extension_patterns
-                if "sourceMappingURL" not in pattern[0]
+                if not _is_sourcemap_pattern(pattern)
             ),
         )
         for extension, extension_patterns in CompressedManifestStaticFilesStorage.patterns

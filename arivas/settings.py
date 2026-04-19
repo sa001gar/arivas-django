@@ -20,6 +20,32 @@ load_dotenv()  # Load environment variables from .env file
 def env_bool(name, default=False):
     return os.getenv(name, str(default)).lower() in ("true", "1", "t", "yes", "y", "on")
 
+
+def env_str(name, default=None, required=False):
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        if required:
+            raise ImproperlyConfigured(f"Environment variable {name} is required")
+        return default
+    return value.strip()
+
+
+def env_int(name, default):
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    try:
+        return int(value)
+    except ValueError as exc:
+        raise ImproperlyConfigured(f"Environment variable {name} must be an integer") from exc
+
+
+def env_list(name, default=None):
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return list(default or [])
+    return [item.strip() for item in value.split(",") if item.strip()]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,20 +53,32 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv("SECRET_KEY")
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env_bool("DEBUG", True)
 USE_R2 = env_bool("USE_R2", False)
-R2_PUBLIC_MEDIA_URL = os.getenv("R2_PUBLIC_MEDIA_URL", "").strip()
+R2_PUBLIC_MEDIA_URL = env_str("R2_PUBLIC_MEDIA_URL", "")
+
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = env_str(
+    "SECRET_KEY",
+    default="dev-only-insecure-secret-key",
+    required=not DEBUG,
+)
 
 
-default_allowed_hosts = ['127.0.0.1', 'localhost'] if DEBUG else ['arivaspharma.co.in', 'www.arivaspharma.co.in']
-ALLOWED_HOSTS = [host.strip() for host in os.getenv("ALLOWED_HOSTS", "").split(",") if host.strip()] or default_allowed_hosts
+default_allowed_hosts = ['127.0.0.1', 'localhost'] if DEBUG else []
+ALLOWED_HOSTS = env_list("ALLOWED_HOSTS", default_allowed_hosts)
+if not DEBUG and not ALLOWED_HOSTS:
+    raise ImproperlyConfigured("ALLOWED_HOSTS must be set when DEBUG=False")
 
-default_csrf_origins = ['https://arivaspharma.co.in', 'https://www.arivaspharma.co.in']
-CSRF_TRUSTED_ORIGINS = [origin.strip() for origin in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if origin.strip()] or default_csrf_origins
+default_csrf_origins = []
+if not DEBUG:
+    default_csrf_origins = [
+        f"https://{host}"
+        for host in ALLOWED_HOSTS
+        if host not in ("127.0.0.1", "localhost")
+    ]
+CSRF_TRUSTED_ORIGINS = env_list("CSRF_TRUSTED_ORIGINS", default_csrf_origins)
 
 CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", not DEBUG)
 SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", not DEBUG)
@@ -187,24 +225,40 @@ STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 
+STATICFILES_STORAGE_BACKEND = (
+    "django.contrib.staticfiles.storage.StaticFilesStorage"
+    if DEBUG
+    else "arivas.storage_backends.ManifestStaticFilesStorageNoSourceMaps"
+)
+
+WHITENOISE_AUTOREFRESH = DEBUG
+WHITENOISE_USE_FINDERS = DEBUG
+WHITENOISE_KEEP_ONLY_HASHED_FILES = env_bool("WHITENOISE_KEEP_ONLY_HASHED_FILES", not DEBUG)
+WHITENOISE_MANIFEST_STRICT = env_bool("WHITENOISE_MANIFEST_STRICT", True)
+WHITENOISE_MAX_AGE = env_int("WHITENOISE_MAX_AGE", 60 if DEBUG else 31536000)
+
 # Media files (Uploaded images, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-STATICFILES_STORAGE_BACKEND = (
-    "arivas.storage_backends.ManifestStaticFilesStorageNoSourceMaps"
-    if not DEBUG
-    else "django.contrib.staticfiles.storage.StaticFilesStorage"
-)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": STATICFILES_STORAGE_BACKEND,
+    },
+}
 
 if USE_R2:
     if "storages" not in INSTALLED_APPS:
         INSTALLED_APPS.append("storages")
 
-    R2_ACCOUNT_ID = os.getenv("R2_ACCOUNT_ID", "")
-    R2_ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID", "")
-    R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY", "")
-    R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME", "")
+    R2_ACCOUNT_ID = env_str("R2_ACCOUNT_ID", "")
+    R2_ACCESS_KEY_ID = env_str("R2_ACCESS_KEY_ID", "")
+    R2_SECRET_ACCESS_KEY = env_str("R2_SECRET_ACCESS_KEY", "")
+    R2_BUCKET_NAME = env_str("R2_BUCKET_NAME", "")
+    R2_ENDPOINT_URL = env_str("R2_ENDPOINT_URL", "")
     missing_required = []
     if not R2_ACCESS_KEY_ID:
         missing_required.append("R2_ACCESS_KEY_ID")
@@ -215,7 +269,7 @@ if USE_R2:
     if not R2_PUBLIC_MEDIA_URL:
         missing_required.append("R2_PUBLIC_MEDIA_URL")
 
-    if not (os.getenv("R2_ENDPOINT_URL") or R2_ACCOUNT_ID):
+    if not (R2_ENDPOINT_URL or R2_ACCOUNT_ID):
         missing_required.append("R2_ENDPOINT_URL or R2_ACCOUNT_ID")
 
     if missing_required:
@@ -235,31 +289,17 @@ if USE_R2:
     AWS_S3_OBJECT_PARAMETERS = {
         "CacheControl": os.getenv("R2_CACHE_CONTROL", "public, max-age=86400"),
     }
-    AWS_S3_ENDPOINT_URL = os.getenv("R2_ENDPOINT_URL", f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com")
+    AWS_S3_ENDPOINT_URL = R2_ENDPOINT_URL or f"https://{R2_ACCOUNT_ID}.r2.cloudflarestorage.com"
 
     MEDIA_URL = R2_PUBLIC_MEDIA_URL.rstrip("/") + "/"
 
-    STORAGES = {
-        "default": {
-            "BACKEND": "arivas.storage_backends.PublicMediaURLS3Storage",
-            "OPTIONS": {
-                "bucket_name": AWS_STORAGE_BUCKET_NAME,
-                "default_acl": None,
-                "querystring_auth": False,
-                "endpoint_url": AWS_S3_ENDPOINT_URL,
-            },
-        },
-        "staticfiles": {
-            "BACKEND": STATICFILES_STORAGE_BACKEND,
-        },
-    }
-else:
-    STORAGES = {
-        "default": {
-            "BACKEND": "django.core.files.storage.FileSystemStorage",
-        },
-        "staticfiles": {
-            "BACKEND": STATICFILES_STORAGE_BACKEND,
+    STORAGES["default"] = {
+        "BACKEND": "arivas.storage_backends.PublicMediaURLS3Storage",
+        "OPTIONS": {
+            "bucket_name": AWS_STORAGE_BUCKET_NAME,
+            "default_acl": None,
+            "querystring_auth": False,
+            "endpoint_url": AWS_S3_ENDPOINT_URL,
         },
     }
 
